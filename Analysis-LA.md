@@ -316,7 +316,7 @@ var_lag
 
 ``` r
 # (3) Cointegration
-coi_1 <- ca.jo(emotions_LA[1:cp_emotions_LA[1],1:5], type = 'trace', K=3)
+coi_1 <- ca.jo(emotions_LA[1:cp_emotions_LA[1],1:5], type = 'trace', ecdet='const', K=3)
 summary(coi_1)
 ```
 
@@ -325,39 +325,47 @@ summary(coi_1)
     ## # Johansen-Procedure # 
     ## ###################### 
     ## 
-    ## Test type: trace statistic , with linear trend 
+    ## Test type: trace statistic , without linear trend and constant in cointegration 
     ## 
     ## Eigenvalues (lambda):
-    ## [1] 0.34267758 0.22294027 0.14609563 0.10451299 0.07092413
+    ## [1] 3.441530e-01 2.232240e-01 1.493571e-01 1.054051e-01 7.246207e-02
+    ## [6] 1.208985e-16
     ## 
     ## Values of teststatistic and critical values of test:
     ## 
     ##           test 10pct  5pct  1pct
-    ## r <= 4 |  6.25  6.50  8.18 11.65
-    ## r <= 3 | 15.64 15.66 17.95 23.52
-    ## r <= 2 | 29.06 28.71 31.52 37.22
-    ## r <= 1 | 50.50 45.23 48.28 55.43
-    ## r = 0  | 86.17 66.49 70.60 78.87
+    ## r <= 4 |  6.39  7.52  9.24 12.97
+    ## r <= 3 | 15.86 17.85 19.96 24.60
+    ## r <= 2 | 29.61 32.00 34.91 41.07
+    ## r <= 1 | 51.08 49.65 53.12 60.16
+    ## r = 0  | 86.94 71.86 76.07 84.45
     ## 
     ## Eigenvectors, normalised to first column:
     ## (These are the cointegration relations)
     ## 
-    ##            sadness.l3   anger.l3    fear.l3 disgust.l3     joy.l3
-    ## sadness.l3   1.000000  1.0000000  1.0000000  1.0000000   1.000000
-    ## anger.l3     8.496206  2.4319733 -0.8145124  0.4466184   2.071070
-    ## fear.l3    -29.020469 -7.3877551  0.3609658 -0.7487574  -7.561461
-    ## disgust.l3  52.996300  2.1209257  0.3922088 -0.9022508 -10.109184
-    ## joy.l3     -11.022476 -0.3355828 -0.7153751 -0.4219415   6.586054
+    ##             sadness.l3    anger.l3     fear.l3 disgust.l3    joy.l3    constant
+    ## sadness.l3    1.000000   1.0000000   1.0000000  1.0000000  1.000000   1.0000000
+    ## anger.l3      7.803069   2.3595477  -0.9042677  0.4078240  1.736975  -3.0942503
+    ## fear.l3     -26.903104  -7.2224825   0.5104597 -0.7474793 -7.839738   0.5776051
+    ## disgust.l3   49.158491   2.0528139   0.3913519 -0.8411801 -9.478738  13.6427853
+    ## joy.l3      -10.275138  -0.3368996  -0.7333505 -0.4214998  6.714601  -5.1318561
+    ## constant   -861.206512 166.0272072 -27.1416699  2.3898088 12.110276 280.4820529
     ## 
     ## Weights W:
     ## (This is the loading matrix)
     ## 
     ##            sadness.l3   anger.l3     fear.l3   disgust.l3       joy.l3
-    ## sadness.d -0.03374481 0.03690994 -0.13461520 -0.004745087  0.002202852
-    ## anger.d   -0.03082019 0.06150264  0.07603934 -0.008628100  0.003996204
-    ## fear.d    -0.01502003 0.07270490 -0.06438179  0.036221828  0.004718935
-    ## disgust.d -0.01750803 0.01379504 -0.02253581  0.098333975  0.001869667
-    ## joy.d     -0.03068494 0.06974081 -0.10781936  0.148088746 -0.010326341
+    ## sadness.d -0.03663184 0.03745255 -0.12596145 -0.010602011  0.001750443
+    ## anger.d   -0.03319311 0.06359594  0.07260781 -0.004824735  0.003903983
+    ## fear.d    -0.01629811 0.07356003 -0.06471890  0.037434555  0.004266265
+    ## disgust.d -0.01901826 0.01403859 -0.02447919  0.101977632  0.001436069
+    ## joy.d     -0.03322300 0.07091919 -0.10254337  0.144328800 -0.010482697
+    ##                constant
+    ## sadness.d  3.494943e-18
+    ## anger.d   -1.142519e-16
+    ## fear.d    -1.429685e-16
+    ## disgust.d -3.383840e-17
+    ## joy.d     -1.736257e-16
 
 ``` r
 # (4) VAR
@@ -497,7 +505,7 @@ auto.arima(emotions_LA$joy[cp_emotions_LA[1]:cp_emotions_LA[2]])
 
 ``` r
 # (2) lag selection
-var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[1]:cp_emotions_LA[2],1:5], lag=10, include='trend')
+var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[1]:cp_emotions_LA[2],1:5], lag=10)
 var_lag
 ```
 
@@ -507,7 +515,7 @@ var_lag
 
 ``` r
 # (3) Cointegration
-coi_2 <- ca.jo(emotions_LA[cp_emotions_LA[1]:cp_emotions_LA[2],1:5], type = 'trace', ecdet = 'trend', K=3)
+coi_2 <- ca.jo(emotions_LA[cp_emotions_LA[1]:cp_emotions_LA[2],1:5], type = 'trace', ecdet = 'const', K=3)
 summary(coi_2)
 ```
 
@@ -516,58 +524,66 @@ summary(coi_2)
     ## # Johansen-Procedure # 
     ## ###################### 
     ## 
-    ## Test type: trace statistic , with linear trend in cointegration 
+    ## Test type: trace statistic , without linear trend and constant in cointegration 
     ## 
     ## Eigenvalues (lambda):
-    ## [1] 0.3575049 0.2625434 0.2290383 0.1302729 0.1168240 0.0000000
+    ## [1]  3.354272e-01  2.564117e-01  1.450114e-01  1.300731e-01  5.021038e-02
+    ## [6] -4.204217e-17
     ## 
     ## Values of teststatistic and critical values of test:
     ## 
-    ##            test 10pct  5pct  1pct
-    ## r <= 4 |  11.43 10.49 12.25 16.26
-    ## r <= 3 |  24.27 22.76 25.32 30.45
-    ## r <= 2 |  48.20 39.06 42.44 48.45
-    ## r <= 1 |  76.22 59.14 62.99 70.05
-    ## r = 0  | 116.92 83.20 87.31 96.58
+    ##           test 10pct  5pct  1pct
+    ## r <= 4 |  4.74  7.52  9.24 12.97
+    ## r <= 3 | 17.56 17.85 19.96 24.60
+    ## r <= 2 | 31.97 32.00 34.91 41.07
+    ## r <= 1 | 59.23 49.65 53.12 60.16
+    ## r = 0  | 96.82 71.86 76.07 84.45
     ## 
     ## Eigenvectors, normalised to first column:
     ## (These are the cointegration relations)
     ## 
-    ##            sadness.l3   anger.l3     fear.l3 disgust.l3     joy.l3   trend.l3
-    ## sadness.l3  1.0000000  1.0000000  1.00000000  1.0000000  1.0000000  1.0000000
-    ## anger.l3    0.1689042  2.9993248 -0.97264850 -6.3100942  4.2632684 -2.2406624
-    ## fear.l3    -1.0973578 -0.3466074  0.06556306 -5.2190986 -4.7584888  0.4430631
-    ## disgust.l3 -2.5470891 -1.3020314 -0.08569908  8.5754599 -1.8983722  1.1502175
-    ## joy.l3      0.3088147 -2.5765571 -0.03493503  1.0942642  1.9016749 -0.7273822
-    ## trend.l3   -0.1811660 -0.4370004  0.19566671 -0.1799782  0.9713255 -0.7345868
+    ##            sadness.l3   anger.l3      fear.l3 disgust.l3       joy.l3
+    ## sadness.l3  1.0000000  1.0000000   1.00000000   1.000000   1.00000000
+    ## anger.l3   -0.4283134  0.3355753  -6.01458283  -3.682419  -0.87720993
+    ## fear.l3    -0.8122915 -0.1364902   1.47729253  -5.500121   0.31541088
+    ## disgust.l3 -1.8858549 -0.6421895   3.86918934   6.268618  -0.06196102
+    ## joy.l3      0.5218403 -0.7555739  -0.06290745   1.167168  -0.23793669
+    ## constant   13.9431330 -0.7802930 -27.98796418 -17.795418 -25.34236048
+    ##                constant
+    ## sadness.l3    1.0000000
+    ## anger.l3     -3.2281773
+    ## fear.l3      -0.2702786
+    ## disgust.l3    2.5172888
+    ## joy.l3        0.9560115
+    ## constant   -114.5115052
     ## 
     ## Weights W:
     ## (This is the loading matrix)
     ## 
-    ##           sadness.l3    anger.l3    fear.l3  disgust.l3      joy.l3
-    ## sadness.d  0.7448734  0.02443300 -0.8729566  0.02565295 -0.08117290
-    ## anger.d    0.5256651 -0.02636946 -0.0195722  0.02135040 -0.05303240
-    ## fear.d     0.5692800  0.07755567 -0.3555696  0.05973619 -0.01188103
-    ## disgust.d  0.6314171  0.02303964 -0.1436578 -0.01628859 -0.02665458
-    ## joy.d      0.3126977  0.31871180 -0.3619398  0.04491480 -0.06423011
-    ##                trend.l3
-    ## sadness.d -5.783006e-15
-    ## anger.d   -6.746006e-15
-    ## fear.d    -2.790987e-15
-    ## disgust.d -8.153370e-15
-    ## joy.d      7.678449e-15
+    ##            sadness.l3    anger.l3      fear.l3   disgust.l3      joy.l3
+    ## sadness.d  0.53028919 -0.25696579  0.024312705 -0.010622315 -0.20707775
+    ## anger.d    0.55606866 -0.01439448  0.075793862 -0.005252078 -0.07873519
+    ## fear.d     0.45865328  0.07357991 -0.018629984  0.061385789 -0.09900836
+    ## disgust.d  0.62134320  0.05842059 -0.006374269 -0.029453704 -0.07112797
+    ## joy.d     -0.03439719  0.61272156  0.024994780  0.020096523 -0.17162986
+    ##                constant
+    ## sadness.d -3.426700e-15
+    ## anger.d   -8.954203e-16
+    ## fear.d     1.151490e-16
+    ## disgust.d -1.459044e-15
+    ## joy.d      5.791310e-15
 
 ``` r
 # (4) VAR
-var_result_2 <- VAR(emotions_LA[cp_emotions_LA[1]:cp_emotions_LA[2],1:5], p=3, type = 'trend')
+var_result_2 <- VAR(emotions_LA[cp_emotions_LA[1]:cp_emotions_LA[2],1:5], p=3)
 
 #VAR stabilty
 roots(var_result_2)
 ```
 
-    ##  [1] 0.9903430 0.7449778 0.7449778 0.6857620 0.6857620 0.6172713 0.5510369
-    ##  [8] 0.5510369 0.5288724 0.5288724 0.5089958 0.4529954 0.2461389 0.1554480
-    ## [15] 0.1554480
+    ##  [1] 0.9620506 0.7290677 0.7290677 0.6833148 0.6833148 0.6424224 0.5418710
+    ##  [8] 0.5076058 0.5076058 0.5070231 0.5070231 0.3813951 0.3813951 0.3364675
+    ## [15] 0.3364675
 
 ``` r
 serial.test(var_result_2)
@@ -577,7 +593,7 @@ serial.test(var_result_2)
     ##  Portmanteau Test (asymptotic)
     ## 
     ## data:  Residuals of VAR object var_result_2
-    ## Chi-squared = 359.4, df = 325, p-value = 0.09168
+    ## Chi-squared = 353.02, df = 325, p-value = 0.1368
 
 ``` r
 # (5) Toda-Yamamoto
@@ -586,26 +602,26 @@ toda.yamamoto(var_result_2, max.oi=1)
 ```
 
     ##    predictor  causes     chisq          p
-    ## 1    sadness   anger 8.7778762 0.03239467
-    ## 2    sadness    fear 5.3365573 0.14874775
-    ## 3    sadness disgust 8.7457281 0.03286975
-    ## 4    sadness     joy 1.8456577 0.60505006
-    ## 5      anger sadness 3.9518357 0.26671220
-    ## 6      anger    fear 3.5637264 0.31259059
-    ## 7      anger disgust 2.6612835 0.44684691
-    ## 8      anger     joy 1.3526467 0.71667115
-    ## 9       fear sadness 1.2400816 0.74340800
-    ## 10      fear   anger 3.2589938 0.35339084
-    ## 11      fear disgust 2.6283338 0.45254390
-    ## 12      fear     joy 2.3311166 0.50658601
-    ## 13   disgust sadness 0.6086514 0.89444901
-    ## 14   disgust   anger 4.3969656 0.22166691
-    ## 15   disgust    fear 0.6440547 0.88627707
-    ## 16   disgust     joy 0.6593630 0.88271794
-    ## 17       joy sadness 1.5239257 0.67675940
-    ## 18       joy   anger 6.1084626 0.10645088
-    ## 19       joy    fear 2.3422747 0.50447060
-    ## 20       joy disgust 1.5274220 0.67595596
+    ## 1    sadness   anger 9.3768486 0.02467823
+    ## 2    sadness    fear 5.8555517 0.11885339
+    ## 3    sadness disgust 9.6246140 0.02204197
+    ## 4    sadness     joy 2.2799074 0.51638104
+    ## 5      anger sadness 2.6335499 0.45163815
+    ## 6      anger    fear 2.6596354 0.44713047
+    ## 7      anger disgust 1.4492619 0.69402917
+    ## 8      anger     joy 1.5705392 0.66608814
+    ## 9       fear sadness 1.8675865 0.60033893
+    ## 10      fear   anger 4.0556385 0.25551852
+    ## 11      fear disgust 3.9476829 0.26716913
+    ## 12      fear     joy 2.7445641 0.43270713
+    ## 13   disgust sadness 1.5807041 0.66377290
+    ## 14   disgust   anger 5.8451063 0.11939419
+    ## 15   disgust    fear 1.9406532 0.58481525
+    ## 16   disgust     joy 0.6688759 0.88049907
+    ## 17       joy sadness 1.7769666 0.61996004
+    ## 18       joy   anger 6.6086135 0.08547608
+    ## 19       joy    fear 2.9451366 0.40016161
+    ## 20       joy disgust 1.8208981 0.61039787
 
 **Stage 3**
 
@@ -695,7 +711,7 @@ auto.arima(emotions_LA$joy[cp_emotions_LA[2]:cp_emotions_LA[3]])
 
 ``` r
 # (2) lag selection
-var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[2]:cp_emotions_LA[3],1:5], lag=10, include = 'trend')
+var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[2]:cp_emotions_LA[3],1:5], lag=10)
 var_lag
 ```
 
@@ -705,7 +721,7 @@ var_lag
 
 ``` r
 # (3) Cointegration
-coi_3 <- ca.jo(emotions_LA[cp_emotions_LA[2]:cp_emotions_LA[3],1:5], type = 'trace', ecdet = 'trend', K=3)
+coi_3 <- ca.jo(emotions_LA[cp_emotions_LA[2]:cp_emotions_LA[3],1:5], type = 'trace', ecdet = 'const', K=3)
 summary(coi_3)
 ```
 
@@ -714,58 +730,59 @@ summary(coi_3)
     ## # Johansen-Procedure # 
     ## ###################### 
     ## 
-    ## Test type: trace statistic , with linear trend in cointegration 
+    ## Test type: trace statistic , without linear trend and constant in cointegration 
     ## 
     ## Eigenvalues (lambda):
-    ## [1] 0.4291986 0.3892722 0.2526183 0.1326464 0.1222005 0.0000000
+    ## [1]  4.290731e-01  2.683953e-01  2.299211e-01  1.329856e-01  5.567811e-02
+    ## [6] -3.029355e-16
     ## 
     ## Values of teststatistic and critical values of test:
     ## 
-    ##            test 10pct  5pct  1pct
-    ## r <= 4 |   8.34 10.49 12.25 16.26
-    ## r <= 3 |  17.45 22.76 25.32 30.45
-    ## r <= 2 |  36.08 39.06 42.44 48.45
-    ## r <= 1 |  67.64 59.14 62.99 70.05
-    ## r = 0  | 103.53 83.20 87.31 96.58
+    ##           test 10pct  5pct  1pct
+    ## r <= 4 |  3.67  7.52  9.24 12.97
+    ## r <= 3 | 12.80 17.85 19.96 24.60
+    ## r <= 2 | 29.52 32.00 34.91 41.07
+    ## r <= 1 | 49.52 49.65 53.12 60.16
+    ## r = 0  | 85.39 71.86 76.07 84.45
     ## 
     ## Eigenvectors, normalised to first column:
     ## (These are the cointegration relations)
     ## 
-    ##             sadness.l3  anger.l3    fear.l3  disgust.l3     joy.l3   trend.l3
-    ## sadness.l3  1.00000000  1.000000  1.0000000  1.00000000  1.0000000  1.0000000
-    ## anger.l3    3.96820210 12.029116  2.4983082 -0.32160319 -3.3219032 -0.2674611
-    ## fear.l3    -3.51539294 11.778399 -5.7336774 -0.69951680 -4.2239316 -0.8677645
-    ## disgust.l3 -4.77705229 -3.253031  3.6969027 -0.82279906  5.8160310  0.0174737
-    ## joy.l3      1.59614242 -5.354519 -2.9836992 -0.06717597  2.7683382 -0.1798466
-    ## trend.l3    0.04810211  2.423472 -0.1921625 -0.05190060  0.9504999  0.5267918
+    ##            sadness.l3   anger.l3     fear.l3  disgust.l3    joy.l3   constant
+    ## sadness.l3   1.000000  1.0000000   1.0000000  1.00000000  1.000000  1.0000000
+    ## anger.l3     3.780120  3.0236522   2.0606116 -0.45973204  1.923350 -0.5453860
+    ## fear.l3     -3.758603 -0.8827191   5.7105602 -0.87684229  1.132973 -0.9680876
+    ## disgust.l3  -4.774483 -0.4966229  -6.9207583 -0.48009483 -3.406131 -1.0047238
+    ## joy.l3       1.696038 -2.2605800  -0.4980534  0.05415738 -3.012270 -0.1076551
+    ## constant    -5.552456  7.3335247 -46.1114749 -1.99082260 65.728199 23.6363109
     ## 
     ## Weights W:
     ## (This is the loading matrix)
     ## 
-    ##            sadness.l3    anger.l3     fear.l3  disgust.l3       joy.l3
-    ## sadness.d  0.14882449 -0.13886587  0.00617694 -0.42069086 -0.022780566
-    ## anger.d   -0.08420502 -0.08236067 -0.06335267 -0.03396690 -0.007216362
-    ## fear.d     0.07552431 -0.07456486  0.05268732  0.15235003  0.010284535
-    ## disgust.d  0.11337399 -0.06629866 -0.03198303  0.06382418 -0.033878321
-    ## joy.d     -0.20088933 -0.08732651  0.09629913  0.12751448 -0.055876125
-    ##                trend.l3
-    ## sadness.d -2.734260e-15
-    ## anger.d   -5.583312e-15
-    ## fear.d     2.348171e-16
-    ## disgust.d  2.323270e-16
-    ## joy.d     -3.098048e-15
+    ##            sadness.l3    anger.l3     fear.l3   disgust.l3     joy.l3
+    ## sadness.d  0.20784082 -0.27352737 -0.16762325 -0.370438854 0.02477690
+    ## anger.d   -0.04625494 -0.26202603 -0.05221598 -0.014854356 0.01402972
+    ## fear.d     0.10779934 -0.07886646 -0.12523035  0.215401601 0.01211711
+    ## disgust.d  0.14251999 -0.15767872 -0.02957121 -0.015207294 0.02025575
+    ## joy.d     -0.15640653 -0.01297936 -0.13313784  0.009664922 0.03510583
+    ##                constant
+    ## sadness.d -1.297048e-14
+    ## anger.d   -7.299163e-15
+    ## fear.d    -1.378508e-14
+    ## disgust.d -6.153133e-15
+    ## joy.d     -3.187747e-15
 
 ``` r
 # (4) VAR
-var_result_3 <- VAR(emotions_LA[cp_emotions_LA[2]:cp_emotions_LA[3],1:5], p=3, type = 'trend')
+var_result_3 <- VAR(emotions_LA[cp_emotions_LA[2]:cp_emotions_LA[3],1:5], p=3)
 
 #VAR stabilty
 roots(var_result_3)
 ```
 
-    ##  [1] 0.98852582 0.69307753 0.69307753 0.68151879 0.66708296 0.66328261
-    ##  [7] 0.66328261 0.65360160 0.65360160 0.57905609 0.55895566 0.55895566
-    ## [13] 0.53773482 0.53773482 0.08284733
+    ##  [1] 0.9520626 0.7022684 0.7022684 0.6949560 0.6673119 0.6588793 0.6588793
+    ##  [8] 0.6574128 0.6574128 0.5822682 0.5622900 0.5622900 0.5554144 0.5554144
+    ## [15] 0.1056908
 
 ``` r
 serial.test(var_result_3)
@@ -775,7 +792,7 @@ serial.test(var_result_3)
     ##  Portmanteau Test (asymptotic)
     ## 
     ## data:  Residuals of VAR object var_result_3
-    ## Chi-squared = 323.37, df = 325, p-value = 0.5151
+    ## Chi-squared = 317.83, df = 325, p-value = 0.6015
 
 ``` r
 # (5) Toda-Yamamoto
@@ -784,26 +801,26 @@ toda.yamamoto(var_result_3, max.oi=1)
 ```
 
     ##    predictor  causes     chisq          p
-    ## 1    sadness   anger 4.5421893 0.20855783
-    ## 2    sadness    fear 4.7999251 0.18704769
-    ## 3    sadness disgust 5.5670731 0.13468149
-    ## 4    sadness     joy 5.6978636 0.12727166
-    ## 5      anger sadness 5.8683041 0.11819630
-    ## 6      anger    fear 0.7453611 0.86248617
-    ## 7      anger disgust 5.4002319 0.14472913
-    ## 8      anger     joy 5.1910865 0.15832781
-    ## 9       fear sadness 8.3329496 0.03960921
-    ## 10      fear   anger 5.1405545 0.16178966
-    ## 11      fear disgust 8.7497207 0.03281038
-    ## 12      fear     joy 3.4057290 0.33319613
-    ## 13   disgust sadness 0.9720797 0.80800740
-    ## 14   disgust   anger 1.7975009 0.61547893
-    ## 15   disgust    fear 2.3523422 0.50256775
-    ## 16   disgust     joy 2.1762655 0.53663844
-    ## 17       joy sadness 8.1216332 0.04356367
-    ## 18       joy   anger 7.6913579 0.05284023
-    ## 19       joy    fear 7.6626638 0.05352298
-    ## 20       joy disgust 8.9386477 0.03011782
+    ## 1    sadness   anger 4.8049736 0.18664778
+    ## 2    sadness    fear 4.4440074 0.21733940
+    ## 3    sadness disgust 5.5334891 0.13664926
+    ## 4    sadness     joy 5.6457315 0.13017748
+    ## 5      anger sadness 5.8440510 0.11944896
+    ## 6      anger    fear 0.7473526 0.86201358
+    ## 7      anger disgust 5.3792650 0.14604091
+    ## 8      anger     joy 5.2945105 0.15145900
+    ## 9       fear sadness 8.6618798 0.03414113
+    ## 10      fear   anger 5.0350138 0.16925114
+    ## 11      fear disgust 8.6041296 0.03504462
+    ## 12      fear     joy 3.3409167 0.34198828
+    ## 13   disgust sadness 0.8152760 0.84580983
+    ## 14   disgust   anger 2.0341076 0.56535781
+    ## 15   disgust    fear 2.1699736 0.53788683
+    ## 16   disgust     joy 2.9144775 0.40499989
+    ## 17       joy sadness 6.6319908 0.08459996
+    ## 18       joy   anger 6.4870755 0.09017361
+    ## 19       joy    fear 6.1464343 0.10469920
+    ## 20       joy disgust 7.4522821 0.05879729
 
 **Stage 4**
 
@@ -893,17 +910,17 @@ auto.arima(emotions_LA$joy[cp_emotions_LA[3]:cp_emotions_LA[4]])
 
 ``` r
 # (2) lag selection
-var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[3]:cp_emotions_LA[4],1:5], lag=10)
+var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[3]:cp_emotions_LA[4],1:5], lag=15)
 var_lag
 ```
 
-    ## Best AIC:  lag= 10 
-    ## Best BIC:  lag= 1 
-    ## Best HQ :  lag= 1
+    ## Best AIC:  lag= 12 
+    ## Best BIC:  lag= 12 
+    ## Best HQ :  lag= 12
 
 ``` r
 # (3) Cointegration
-coi_4 <- ca.jo(emotions_LA[cp_emotions_LA[3]:cp_emotions_LA[4],1:5], type = 'trace', K=3)
+coi_4 <- ca.jo(emotions_LA[cp_emotions_LA[3]:cp_emotions_LA[4],1:5], type = 'trace', ecdet='const', K=3)
 summary(coi_4)
 ```
 
@@ -912,39 +929,47 @@ summary(coi_4)
     ## # Johansen-Procedure # 
     ## ###################### 
     ## 
-    ## Test type: trace statistic , with linear trend 
+    ## Test type: trace statistic , without linear trend and constant in cointegration 
     ## 
     ## Eigenvalues (lambda):
-    ## [1] 0.46363994 0.40148113 0.32895199 0.20157813 0.07793199
+    ## [1] 4.636419e-01 4.014956e-01 3.312804e-01 2.033242e-01 7.846224e-02
+    ## [6] 2.220446e-16
     ## 
     ## Values of teststatistic and critical values of test:
     ## 
     ##            test 10pct  5pct  1pct
-    ## r <= 4 |   6.33  6.50  8.18 11.65
-    ## r <= 3 |  23.89 15.66 17.95 23.52
-    ## r <= 2 |  55.00 28.71 31.52 37.22
-    ## r <= 1 |  95.04 45.23 48.28 55.43
-    ## r = 0  | 143.63 66.49 70.60 78.87
+    ## r <= 4 |   6.37  7.52  9.24 12.97
+    ## r <= 3 |  24.10 17.85 19.96 24.60
+    ## r <= 2 |  55.49 32.00 34.91 41.07
+    ## r <= 1 |  95.53 49.65 53.12 60.16
+    ## r = 0  | 144.12 71.86 76.07 84.45
     ## 
     ## Eigenvectors, normalised to first column:
     ## (These are the cointegration relations)
     ## 
-    ##            sadness.l3  anger.l3    fear.l3 disgust.l3     joy.l3
-    ## sadness.l3  1.0000000  1.000000  1.0000000  1.0000000   1.000000
-    ## anger.l3   -3.5202240 -2.103902 -0.7098856  1.3505083  -2.997224
-    ## fear.l3    -3.3227971  0.919811  0.3977140 -1.5120730   1.135995
-    ## disgust.l3  5.4965245 -2.484902  0.2349904 -1.6470414 -10.351781
-    ## joy.l3     -0.7757309  1.267225 -0.9565547 -0.2309302  -6.534819
+    ##            sadness.l3   anger.l3    fear.l3 disgust.l3      joy.l3    constant
+    ## sadness.l3  1.0000000  1.0000000  1.0000000  1.0000000   1.0000000   1.0000000
+    ## anger.l3   -3.5239655 -2.1118598 -0.6943264  1.4055720  -1.7921331   0.3592773
+    ## fear.l3    -3.3263441  0.9239621  0.3804062 -1.5648488   0.5257205  -0.5094271
+    ## disgust.l3  5.5024447 -2.4969472  0.2157627 -1.6976488  -6.9354340  -0.4290711
+    ## joy.l3     -0.7754942  1.2772463 -0.9459281 -0.2077991  -4.4395707  -0.5637447
+    ## constant   17.7201452 -5.5692235 -0.2127663  4.5221379 184.8615785 -10.8679327
     ## 
     ## Weights W:
     ## (This is the loading matrix)
     ## 
-    ##            sadness.l3    anger.l3    fear.l3  disgust.l3      joy.l3
-    ## sadness.d  0.02176238 -0.10849883 -0.8592009 -0.13262175 0.021618301
-    ## anger.d    0.11392822  0.26288513 -0.2214430 -0.14231978 0.012640228
-    ## fear.d     0.24147683  0.02229561 -0.3993330  0.23379515 0.008915877
-    ## disgust.d -0.10370542  0.14212918 -0.3286979  0.08430520 0.012079669
-    ## joy.d     -0.03536708 -0.31612681  0.2405651  0.08592559 0.021854896
+    ##            sadness.l3    anger.l3    fear.l3  disgust.l3     joy.l3
+    ## sadness.d  0.02205464 -0.10618840 -0.8786961 -0.12746687 0.03335586
+    ## anger.d    0.11394906  0.26226848 -0.2302352 -0.13979959 0.01950797
+    ## fear.d     0.24129836  0.02271422 -0.3993480  0.22864063 0.01384525
+    ## disgust.d -0.10347559  0.14207201 -0.3328767  0.08168623 0.01870476
+    ## joy.d     -0.03536975 -0.31484676  0.2379048  0.07525094 0.03391255
+    ##                constant
+    ## sadness.d -1.914061e-15
+    ## anger.d    6.737776e-16
+    ## fear.d     4.590531e-17
+    ## disgust.d  2.213166e-15
+    ## joy.d     -1.165412e-15
 
 ``` r
 # (4) VAR
@@ -1084,7 +1109,7 @@ auto.arima(emotions_LA$joy[cp_emotions_LA[4]:dim(emotions_LA)[1]])
 
 ``` r
 # (2) lag selection
-var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], lag=30, include='trend')
+var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], lag=30)
 var_lag
 ```
 
@@ -1094,7 +1119,7 @@ var_lag
 
 ``` r
 # (3) Cointegration
-coi_5 <- ca.jo(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], type = 'trace', K=8)
+coi_5 <- ca.jo(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], type = 'trace', ecdet='const', K=3)
 summary(coi_5)
 ```
 
@@ -1103,54 +1128,59 @@ summary(coi_5)
     ## # Johansen-Procedure # 
     ## ###################### 
     ## 
-    ## Test type: trace statistic , with linear trend 
+    ## Test type: trace statistic , without linear trend and constant in cointegration 
     ## 
     ## Eigenvalues (lambda):
-    ## [1] 0.132067610 0.112750170 0.093430006 0.057730803 0.008780241
+    ## [1] 2.610855e-01 2.502574e-01 2.075485e-01 1.869285e-01 2.032486e-02
+    ## [6] 2.220446e-16
     ## 
     ## Values of teststatistic and critical values of test:
     ## 
-    ##            test 10pct  5pct  1pct
-    ## r <= 4 |   9.75  6.50  8.18 11.65
-    ## r <= 3 |  75.45 15.66 17.95 23.52
-    ## r <= 2 | 183.84 28.71 31.52 37.22
-    ## r <= 1 | 316.03 45.23 48.28 55.43
-    ## r = 0  | 472.54 66.49 70.60 78.87
+    ##             test 10pct  5pct  1pct
+    ## r <= 4 |   22.79  7.52  9.24 12.97
+    ## r <= 3 |  252.49 17.85 19.96 24.60
+    ## r <= 2 |  510.70 32.00 34.91 41.07
+    ## r <= 1 |  830.41 49.65 53.12 60.16
+    ## r = 0  | 1166.27 71.86 76.07 84.45
     ## 
     ## Eigenvectors, normalised to first column:
     ## (These are the cointegration relations)
     ## 
-    ##             sadness.l8   anger.l8    fear.l8 disgust.l8     joy.l8
-    ## sadness.l8  1.00000000   1.000000  1.0000000  1.0000000  1.0000000
-    ## anger.l8    1.04820404  -6.019661 -1.8359938 -0.3774849 -0.8340387
-    ## fear.l8    -0.35364368  16.916827  0.3205328 -1.4802529 -0.3539934
-    ## disgust.l8 -2.42503792  15.652170 -0.3806405  0.7400187 -0.1727352
-    ## joy.l8     -0.09297642 -15.977416  0.1177292 -0.2492190  2.1939081
+    ##             sadness.l3   anger.l3    fear.l3 disgust.l3     joy.l3    constant
+    ## sadness.l3  1.00000000   1.000000   1.000000  1.0000000   1.000000   1.0000000
+    ## anger.l3   -0.26842673 -10.598976  15.773263 -0.5188050   6.298390   0.4717832
+    ## fear.l3    -0.35924688   7.429532   8.197369 -1.2156367   3.100956   0.5540050
+    ## disgust.l3 -1.31010479   5.937384 -13.625441  1.8219713   3.767955   1.0822946
+    ## joy.l3      0.10345329  -2.340900  -8.327401 -0.9115314   5.336979   0.6768952
+    ## constant    0.01466212  -1.222477  -2.458479  0.1243293 -74.847586 -75.0623840
     ## 
     ## Weights W:
     ## (This is the loading matrix)
     ## 
-    ##            sadness.l8    anger.l8     fear.l8  disgust.l8       joy.l8
-    ## sadness.d -0.44407381 -0.02603780  0.03462775 -0.21729319 -0.013869438
-    ## anger.d   -0.30671102 -0.01357913  0.37052832 -0.02179849 -0.006637258
-    ## fear.d    -0.15274425 -0.03088732 -0.03492188  0.13764438 -0.008452694
-    ## disgust.d  0.13726958 -0.01593935  0.21553898 -0.11089881 -0.006766753
-    ## joy.d      0.04852625  0.01042982  0.12962067  0.08180400 -0.019116325
+    ##           sadness.l3    anger.l3       fear.l3  disgust.l3       joy.l3
+    ## sadness.d -0.3760322 -0.01906650 -0.0208124251 -0.21379660 -0.004274123
+    ## anger.d    0.2455663  0.03741644 -0.0244852719 -0.04909688 -0.002434782
+    ## fear.d     0.1428022 -0.06167547 -0.0256739427  0.09038500 -0.002563303
+    ## disgust.d  0.3678304 -0.00356849 -0.0001069853 -0.13260574 -0.002257268
+    ## joy.d     -0.1377139  0.02200182  0.0215410074  0.19787991 -0.004759337
+    ##               constant
+    ## sadness.d 4.764100e-17
+    ## anger.d   1.099784e-17
+    ## fear.d    2.751691e-17
+    ## disgust.d 3.363064e-18
+    ## joy.d     3.655052e-17
 
 ``` r
 # (4) VAR
-var_result_5 <- VAR(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], p=8, type='trend')
+var_result_5 <- VAR(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], p=3)
 
 #VAR stability
 roots(var_result_5)
 ```
 
-    ##  [1] 0.9949405 0.8646049 0.8122300 0.8122300 0.7979088 0.7979088 0.7961994
-    ##  [8] 0.7961994 0.7847384 0.7847384 0.7806534 0.7734099 0.7734099 0.7576389
-    ## [15] 0.7576389 0.7393453 0.7393453 0.7340347 0.7340347 0.7294652 0.7294652
-    ## [22] 0.7219077 0.7219077 0.7165447 0.7165447 0.6969200 0.6969200 0.6914831
-    ## [29] 0.6914831 0.6900455 0.6900455 0.6858546 0.6507737 0.6236225 0.6236225
-    ## [36] 0.5860754 0.5860754 0.5736283 0.5736283 0.2052031
+    ##  [1] 0.968924326 0.598220311 0.598220311 0.486446672 0.411106338 0.362194166
+    ##  [7] 0.362194166 0.343364431 0.343364431 0.341796273 0.341796273 0.308904040
+    ## [13] 0.308904040 0.118994244 0.008937326
 
 ``` r
 serial.test(var_result_5)
@@ -1160,7 +1190,7 @@ serial.test(var_result_5)
     ##  Portmanteau Test (asymptotic)
     ## 
     ## data:  Residuals of VAR object var_result_5
-    ## Chi-squared = 336.5, df = 200, p-value = 5.092e-09
+    ## Chi-squared = 552.54, df = 325, p-value = 4.841e-14
 
 ``` r
 # (5) Toda-Yamamoto
@@ -1168,24 +1198,24 @@ serial.test(var_result_5)
 toda.yamamoto(var_result_5, max.oi=1)
 ```
 
-    ##    predictor  causes     chisq            p
-    ## 1    sadness   anger 10.045343 2.618578e-01
-    ## 2    sadness    fear 14.026299 8.108251e-02
-    ## 3    sadness disgust 14.473278 7.023355e-02
-    ## 4    sadness     joy  6.103029 6.356922e-01
-    ## 5      anger sadness 15.498689 5.014397e-02
-    ## 6      anger    fear  4.275699 8.314317e-01
-    ## 7      anger disgust  4.936333 7.643588e-01
-    ## 8      anger     joy  9.323864 3.157161e-01
-    ## 9       fear sadness  2.173292 9.752329e-01
-    ## 10      fear   anger  6.003754 6.468113e-01
-    ## 11      fear disgust  7.768045 4.564501e-01
-    ## 12      fear     joy  5.632950 6.882699e-01
-    ## 13   disgust sadness  9.652464 2.902703e-01
-    ## 14   disgust   anger 12.357699 1.359435e-01
-    ## 15   disgust    fear  3.102921 9.277335e-01
-    ## 16   disgust     joy  5.049432 7.522799e-01
-    ## 17       joy sadness 60.366347 3.949940e-10
-    ## 18       joy   anger 56.730090 2.032828e-09
-    ## 19       joy    fear 77.173769 1.808324e-13
-    ## 20       joy disgust 58.831374 7.897832e-10
+    ##    predictor  causes      chisq            p
+    ## 1    sadness   anger 10.2183156 1.679868e-02
+    ## 2    sadness    fear  5.7190500 1.261085e-01
+    ## 3    sadness disgust 16.5617820 8.696140e-04
+    ## 4    sadness     joy  0.5482198 9.081770e-01
+    ## 5      anger sadness  0.5752679 9.020701e-01
+    ## 6      anger    fear  5.7389216 1.250267e-01
+    ## 7      anger disgust  0.4915131 9.207520e-01
+    ## 8      anger     joy  6.1228713 1.057829e-01
+    ## 9       fear sadness  1.1406367 7.672744e-01
+    ## 10      fear   anger  1.6621823 6.453740e-01
+    ## 11      fear disgust  2.8374358 4.173743e-01
+    ## 12      fear     joy  2.1306314 5.457407e-01
+    ## 13   disgust sadness  1.2755302 7.349517e-01
+    ## 14   disgust   anger  1.4094690 7.033167e-01
+    ## 15   disgust    fear  0.8163090 8.455623e-01
+    ## 16   disgust     joy  2.8207790 4.200907e-01
+    ## 17       joy sadness 28.1294329 3.411780e-06
+    ## 18       joy   anger 16.1218531 1.070582e-03
+    ## 19       joy    fear 39.3642798 1.453070e-08
+    ## 20       joy disgust 16.3598522 9.567257e-04
