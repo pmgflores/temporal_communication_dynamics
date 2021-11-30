@@ -4,7 +4,7 @@ Communicated emotions LA
 ### Import Data
 
 ``` r
-setwd("C:\\Users\\Pablo M. Flores\\OneDrive\\Pablo Flores Bautista\\UCDavis\\PhD\\Papers\\2020 Communicated emotions\\Paper")
+setwd("C:\\Users\\Pablo M. Flores\\OneDrive\\Pablo Flores Bautista\\UCDavis\\PhD\\Papers\\2020 Communicated emotions\\Paper\\Git repository\\communicated emotions")
 
 Base <- read.csv("DDBB_to_RR_LA.csv", header = TRUE)
 
@@ -17,12 +17,12 @@ joy_LA <- aggregate(joy~one_minutes, data = Base, sum)
 count_LA <- aggregate(count~one_minutes, data = Base, sum)
 
 #Time Series variables mean
-sadness <- sadness_LA$sadness#[1:288]
-anger <- anger_LA$anger#[1:288]
-fear <- fear_LA$fear#[1:288]
-disgust <- disgust_LA$disgust#[1:288]
-joy <- joy_LA$joy#[1:288]
-count <- count_LA$count#[1:288]
+sadness <- sadness_LA$sadness
+anger <- anger_LA$anger
+fear <- fear_LA$fear
+disgust <- disgust_LA$disgust
+joy <- joy_LA$joy
+count <- count_LA$count
 
 emotions_LA <- as.data.frame(cbind(sadness, anger, fear, disgust, joy, count))
 ```
@@ -33,7 +33,15 @@ Based on the variation of the amount of tweets the process is divided in
 phases
 
 ``` r
-library("changepoint")
+library('forecast')
+```
+
+    ## Registered S3 method overwritten by 'quantmod':
+    ##   method            from
+    ##   as.zoo.data.frame zoo
+
+``` r
+library('changepoint')
 ```
 
     ## Loading required package: zoo
@@ -49,32 +57,28 @@ library("changepoint")
     ##  NOTE: Predefined penalty values changed in version 2.2.  Previous penalty values with a postfix 1 i.e. SIC1 are now without i.e. SIC and previous penalties without a postfix i.e. SIC are now with a postfix 0 i.e. SIC0. See NEWS and help files for further details.
 
 ``` r
-#Finding change points in non stationary series
-#d_count <- diff(emotions_LA$count)
-#v_count <- cpt.var(d_count[1:length(d_count)], method = "PELT")
-
-#plot(v_count, main="Variation of tweets LA")
-
-cp_count <- cpt.var(emotions_LA[,6], method='PELT')
-
-plot(cp_count, main='Change points tweet LA')
+ggtsdisplay(emotions_LA$count, plot.type = "partial", points = FALSE, smooth = TRUE,
+                      main = 'Tweets about LA earthquake',
+                      xlab = 'Time', ylab = 'Variation')
 ```
 
+    ## `geom_smooth()` using formula 'y ~ x'
+
 ![](Analysis-LA_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+``` r
+cp_count <- cpt.var(emotions_LA[,6], method='PELT')
+
+plot(cp_count, main='Change points tweets during LA earthquake')
+```
+
+![](Analysis-LA_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
 ``` r
 detach('package:changepoint')
 ```
 
 ### Time series plots
-
-``` r
-library('forecast')
-```
-
-    ## Registered S3 method overwritten by 'quantmod':
-    ##   method            from
-    ##   as.zoo.data.frame zoo
 
 ``` r
 ggtsdisplay(emotions_LA$sadness, plot.type = "partial", points = FALSE, smooth = TRUE,
@@ -126,234 +130,29 @@ ggtsdisplay(emotions_LA$joy, plot.type = "partial", points = FALSE, smooth = TRU
 
 ![](Analysis-LA_files/figure-gfm/unnamed-chunk-3-5.png)<!-- -->
 
+``` r
+detach('package:forecast')
+```
+
 ### Univariate analysis
 
 Adjust models to the different time series
 
 ``` r
-auto.arima(emotions_LA$sadness)
+#auto.arima(emotions_LA$sadness)
+
+#auto.arima(emotions_LA$anger)
+
+#auto.arima(emotions_LA$fear)
+
+#auto.arima(emotions_LA$disgust)
+
+#auto.arima(emotions_LA$joy)
+
+#detach('package:forecast')
 ```
 
-    ## Series: emotions_LA$sadness 
-    ## ARIMA(5,1,1) with drift 
-    ## 
-    ## Coefficients:
-    ##          ar1     ar2     ar3     ar4      ar5      ma1    drift
-    ##       0.4675  0.1974  0.0270  0.0626  -0.3896  -0.5578  -0.0692
-    ## s.e.  0.0509  0.0280  0.0292  0.0304   0.0311   0.0487   0.1090
-    ## 
-    ## sigma^2 estimated as 35.19:  log likelihood=-4600.77
-    ## AIC=9217.54   AICc=9217.64   BIC=9259.71
-
-``` r
-auto.arima(emotions_LA$anger)
-```
-
-    ## Series: emotions_LA$anger 
-    ## ARIMA(4,1,1) with drift 
-    ## 
-    ## Coefficients:
-    ##          ar1     ar2      ar3      ar4      ma1    drift
-    ##       0.9349  0.1372  -0.0388  -0.3588  -0.8889  -0.1061
-    ## s.e.  0.0267  0.0354   0.0356   0.0300   0.0117   0.0432
-    ## 
-    ## sigma^2 estimated as 22.84:  log likelihood=-4291.06
-    ## AIC=8596.11   AICc=8596.19   BIC=8633.01
-
-``` r
-auto.arima(emotions_LA$fear)
-```
-
-    ## Series: emotions_LA$fear 
-    ## ARIMA(5,1,1) with drift 
-    ## 
-    ## Coefficients:
-    ##          ar1     ar2     ar3      ar4      ar5      ma1    drift
-    ##       0.6620  0.2946  0.0633  -0.1075  -0.3918  -0.8212  -0.0753
-    ## s.e.  0.0295  0.0304  0.0321   0.0321   0.0303   0.0195   0.0363
-    ## 
-    ## sigma^2 estimated as 13.51:  log likelihood=-3913.33
-    ## AIC=7842.67   AICc=7842.77   BIC=7884.84
-
-``` r
-auto.arima(emotions_LA$disgust)
-```
-
-    ## Series: emotions_LA$disgust 
-    ## ARIMA(5,1,2) with drift 
-    ## 
-    ## Coefficients:
-    ##           ar1     ar2     ar3      ar4      ar5     ma1      ma2    drift
-    ##       -0.1448  0.7897  0.2094  -0.0775  -0.2891  0.0590  -0.7104  -0.0303
-    ## s.e.   0.0606  0.0584  0.0334   0.0338   0.0351  0.0611   0.0595   0.0579
-    ## 
-    ## sigma^2 estimated as 10.32:  log likelihood=-3717.81
-    ## AIC=7453.62   AICc=7453.74   BIC=7501.06
-
-``` r
-auto.arima(emotions_LA$joy)
-```
-
-    ## Series: emotions_LA$joy 
-    ## ARIMA(0,1,0) 
-    ## 
-    ## sigma^2 estimated as 40.64:  log likelihood=-4707.36
-    ## AIC=9416.73   AICc=9416.73   BIC=9422
-
-``` r
-detach('package:forecast')
-```
-
-### Granger causality analysis
-
-Considering that the time series have order of integration equal to one.
-I review stationary tests for each of the time series differentiated one
-time. Augmented Dicker-Fuller test and KPSS test show that once
-differentiated the time series are stationary.
-
-``` r
-d_sadness <- diff(emotions_LA$sadness)
-d_anger <- diff(emotions_LA$anger)
-d_fear <- diff(emotions_LA$fear)
-d_disgust <- diff(emotions_LA$disgust)
-d_joy <- diff(emotions_LA$joy)
-
-d_emotions_LA <- as.data.frame(cbind(d_sadness, d_anger, d_fear, d_disgust, d_joy))
-
-library('tseries')
-
-adf.test(d_emotions_LA$d_sadness)
-```
-
-    ## Warning in adf.test(d_emotions_LA$d_sadness): p-value smaller than printed p-
-    ## value
-
-    ## 
-    ##  Augmented Dickey-Fuller Test
-    ## 
-    ## data:  d_emotions_LA$d_sadness
-    ## Dickey-Fuller = -12.198, Lag order = 11, p-value = 0.01
-    ## alternative hypothesis: stationary
-
-``` r
-adf.test(d_emotions_LA$d_anger)
-```
-
-    ## Warning in adf.test(d_emotions_LA$d_anger): p-value smaller than printed p-value
-
-    ## 
-    ##  Augmented Dickey-Fuller Test
-    ## 
-    ## data:  d_emotions_LA$d_anger
-    ## Dickey-Fuller = -18.771, Lag order = 11, p-value = 0.01
-    ## alternative hypothesis: stationary
-
-``` r
-adf.test(d_emotions_LA$d_fear)
-```
-
-    ## Warning in adf.test(d_emotions_LA$d_fear): p-value smaller than printed p-value
-
-    ## 
-    ##  Augmented Dickey-Fuller Test
-    ## 
-    ## data:  d_emotions_LA$d_fear
-    ## Dickey-Fuller = -19.129, Lag order = 11, p-value = 0.01
-    ## alternative hypothesis: stationary
-
-``` r
-adf.test(d_emotions_LA$d_disgust)
-```
-
-    ## Warning in adf.test(d_emotions_LA$d_disgust): p-value smaller than printed p-
-    ## value
-
-    ## 
-    ##  Augmented Dickey-Fuller Test
-    ## 
-    ## data:  d_emotions_LA$d_disgust
-    ## Dickey-Fuller = -15.937, Lag order = 11, p-value = 0.01
-    ## alternative hypothesis: stationary
-
-``` r
-adf.test(d_emotions_LA$d_joy)
-```
-
-    ## Warning in adf.test(d_emotions_LA$d_joy): p-value smaller than printed p-value
-
-    ## 
-    ##  Augmented Dickey-Fuller Test
-    ## 
-    ## data:  d_emotions_LA$d_joy
-    ## Dickey-Fuller = -11.5, Lag order = 11, p-value = 0.01
-    ## alternative hypothesis: stationary
-
-``` r
-kpss.test(d_emotions_LA$d_sadness)
-```
-
-    ## Warning in kpss.test(d_emotions_LA$d_sadness): p-value greater than printed p-
-    ## value
-
-    ## 
-    ##  KPSS Test for Level Stationarity
-    ## 
-    ## data:  d_emotions_LA$d_sadness
-    ## KPSS Level = 0.044016, Truncation lag parameter = 7, p-value = 0.1
-
-``` r
-kpss.test(d_emotions_LA$d_anger)
-```
-
-    ## Warning in kpss.test(d_emotions_LA$d_anger): p-value greater than printed p-
-    ## value
-
-    ## 
-    ##  KPSS Test for Level Stationarity
-    ## 
-    ## data:  d_emotions_LA$d_anger
-    ## KPSS Level = 0.017629, Truncation lag parameter = 7, p-value = 0.1
-
-``` r
-kpss.test(d_emotions_LA$d_fear)
-```
-
-    ## Warning in kpss.test(d_emotions_LA$d_fear): p-value greater than printed p-value
-
-    ## 
-    ##  KPSS Test for Level Stationarity
-    ## 
-    ## data:  d_emotions_LA$d_fear
-    ## KPSS Level = 0.030899, Truncation lag parameter = 7, p-value = 0.1
-
-``` r
-kpss.test(d_emotions_LA$d_disgust)
-```
-
-    ## Warning in kpss.test(d_emotions_LA$d_disgust): p-value greater than printed p-
-    ## value
-
-    ## 
-    ##  KPSS Test for Level Stationarity
-    ## 
-    ## data:  d_emotions_LA$d_disgust
-    ## KPSS Level = 0.040514, Truncation lag parameter = 7, p-value = 0.1
-
-``` r
-kpss.test(d_emotions_LA$d_joy)
-```
-
-    ## Warning in kpss.test(d_emotions_LA$d_joy): p-value greater than printed p-value
-
-    ## 
-    ##  KPSS Test for Level Stationarity
-    ## 
-    ## data:  d_emotions_LA$d_joy
-    ## KPSS Level = 0.040817, Truncation lag parameter = 7, p-value = 0.1
-
-``` r
-detach('package:tseries')
-```
+## Granger Causality
 
 ### Toda-Yamamoto Granger causality correction
 
@@ -432,7 +231,7 @@ ts.plot(emotions_LA[1:cp_emotions_LA[1],1:5], col=c('red', 'blue', 'skyblue', 'o
 legend("topright",c("Sadness","Anger","Fear","Disgust","Joy"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
 ```
 
-![](Analysis-LA_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](Analysis-LA_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 # (1) order of integration
@@ -507,13 +306,13 @@ auto.arima(emotions_LA$joy[1:cp_emotions_LA[1]])
 
 ``` r
 # (2) lag selection
-var_lag <- tsDyn::lags.select(emotions_LA[1:cp_emotions_LA[1],1:5], lag=10)
+var_lag <- tsDyn::lags.select(emotions_LA[1:cp_emotions_LA[1],1:5], lag=10, include='trend')
 var_lag
 ```
 
     ## Best AIC:  lag= 10 
     ## Best BIC:  lag= 1 
-    ## Best HQ :  lag= 3
+    ## Best HQ :  lag= 2
 
 ``` r
 # (3) Cointegration
@@ -570,15 +369,15 @@ summary(coi_1)
 
 ``` r
 # (4) VAR
-var_result_1 <- VAR(emotions_LA[1:cp_emotions_LA[1],1:5], p=3, type = 'both')
+var_result_1 <- VAR(emotions_LA[1:cp_emotions_LA[1],1:5], p=3, type = 'trend')
 
 #VAR stabilty
 roots(var_result_1)
 ```
 
-    ##  [1] 0.8869831 0.8869831 0.7841296 0.7775477 0.7775477 0.6764851 0.6764851
-    ##  [8] 0.6177919 0.5889539 0.5889539 0.5737678 0.5737678 0.4425087 0.2470185
-    ## [15] 0.2470185
+    ##  [1] 0.9814331 0.9067197 0.9067197 0.7657878 0.7657878 0.6716249 0.6661859
+    ##  [8] 0.6661859 0.5938373 0.5805106 0.5805106 0.3970955 0.3471677 0.3471677
+    ## [15] 0.2746103
 
 ``` r
 serial.test(var_result_1)
@@ -588,7 +387,7 @@ serial.test(var_result_1)
     ##  Portmanteau Test (asymptotic)
     ## 
     ## data:  Residuals of VAR object var_result_1
-    ## Chi-squared = 362.53, df = 325, p-value = 0.07425
+    ## Chi-squared = 328.34, df = 325, p-value = 0.4378
 
 ``` r
 # (5) Toda-Yamamoto
@@ -596,27 +395,27 @@ serial.test(var_result_1)
 toda.yamamoto(var_result_1, max.oi=2)
 ```
 
-    ##    predictor  causes      chisq          p
-    ## 1    sadness   anger  0.4824254 0.97518917
-    ## 2    sadness    fear  2.7214485 0.60546665
-    ## 3    sadness disgust  5.4517475 0.24400358
-    ## 4    sadness     joy  5.4757091 0.24187293
-    ## 5      anger sadness  8.8329642 0.06541292
-    ## 6      anger    fear  3.2707685 0.51357703
-    ## 7      anger disgust  5.5049094 0.23929828
-    ## 8      anger     joy  7.4592728 0.11351866
-    ## 9       fear sadness 11.2467309 0.02392666
-    ## 10      fear   anger  3.4754237 0.48162504
-    ## 11      fear disgust  4.9292261 0.29463674
-    ## 12      fear     joy  8.7030645 0.06896547
-    ## 13   disgust sadness  6.4851630 0.16572764
-    ## 14   disgust   anger  0.3590983 0.98568656
-    ## 15   disgust    fear  8.3496875 0.07957665
-    ## 16   disgust     joy 10.4493009 0.03350257
-    ## 17       joy sadness  6.0331106 0.19668916
-    ## 18       joy   anger  1.4347148 0.83813953
-    ## 19       joy    fear  3.7143130 0.44604761
-    ## 20       joy disgust  4.1916665 0.38068762
+    ##    predictor  causes     chisq          p
+    ## 1    sadness   anger  2.640046 0.61974573
+    ## 2    sadness    fear  2.841209 0.58474043
+    ## 3    sadness disgust  4.288933 0.36831301
+    ## 4    sadness     joy  4.845652 0.30350436
+    ## 5      anger sadness  8.493639 0.07508026
+    ## 6      anger    fear  4.803216 0.30809109
+    ## 7      anger disgust  4.242019 0.37424192
+    ## 8      anger     joy  5.855454 0.21020626
+    ## 9       fear sadness  9.431426 0.05117552
+    ## 10      fear   anger  8.000301 0.09156718
+    ## 11      fear disgust  7.351367 0.11844482
+    ## 12      fear     joy  3.288554 0.51074782
+    ## 13   disgust sadness 13.171445 0.01046777
+    ## 14   disgust   anger  4.545479 0.33718888
+    ## 15   disgust    fear  9.973808 0.04087120
+    ## 16   disgust     joy  5.697170 0.22293398
+    ## 17       joy sadness 10.821754 0.02864201
+    ## 18       joy   anger  2.142807 0.70951255
+    ## 19       joy    fear  5.084248 0.27876186
+    ## 20       joy disgust  8.156313 0.08601718
 
 **Stage 2**
 
@@ -626,7 +425,7 @@ ts.plot(emotions_LA[cp_emotions_LA[1]:cp_emotions_LA[2],1:5], col=c('red', 'blue
 legend("topright",c("Sadness","Anger","Fear","Disgust","Joy"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
 ```
 
-![](Analysis-LA_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](Analysis-LA_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 # (1) order of integration
@@ -706,7 +505,7 @@ auto.arima(emotions_LA$joy[cp_emotions_LA[1]:cp_emotions_LA[2]])
 
 ``` r
 # (2) lag selection
-var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[1]:cp_emotions_LA[2],1:5], lag=10)
+var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[1]:cp_emotions_LA[2],1:5], lag=10, include='trend')
 var_lag
 ```
 
@@ -824,7 +623,7 @@ ts.plot(emotions_LA[cp_emotions_LA[2]:cp_emotions_LA[3],1:5], col=c('red', 'blue
 legend("topright",c("Sadness","Anger","Fear","Disgust","Joy"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
 ```
 
-![](Analysis-LA_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](Analysis-LA_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
 # (1) order of integration
@@ -966,13 +765,15 @@ summary(coi_3)
 
 ``` r
 # (4) VAR
-var_result_3 <- VAR(emotions_LA[cp_emotions_LA[2]:cp_emotions_LA[3],1:5], p=1, type = 'trend')
+var_result_3 <- VAR(emotions_LA[cp_emotions_LA[2]:cp_emotions_LA[3],1:5], p=3, type = 'trend')
 
 #VAR stabilty
 roots(var_result_3)
 ```
 
-    ## [1] 0.9687511 0.2717235 0.2717235 0.2228502 0.2228502
+    ##  [1] 0.98852582 0.69307753 0.69307753 0.68151879 0.66708296 0.66328261
+    ##  [7] 0.66328261 0.65360160 0.65360160 0.57905609 0.55895566 0.55895566
+    ## [13] 0.53773482 0.53773482 0.08284733
 
 ``` r
 serial.test(var_result_3)
@@ -982,7 +783,7 @@ serial.test(var_result_3)
     ##  Portmanteau Test (asymptotic)
     ## 
     ## data:  Residuals of VAR object var_result_3
-    ## Chi-squared = 367.2, df = 375, p-value = 0.6035
+    ## Chi-squared = 323.37, df = 325, p-value = 0.5151
 
 ``` r
 # (5) Toda-Yamamoto
@@ -990,27 +791,27 @@ serial.test(var_result_3)
 toda.yamamoto(var_result_3, max.oi=1)
 ```
 
-    ##    predictor  causes      chisq          p
-    ## 1    sadness   anger 0.03244641 0.85705140
-    ## 2    sadness    fear 4.94523466 0.02616269
-    ## 3    sadness disgust 1.64789448 0.19924575
-    ## 4    sadness     joy 0.76706406 0.38112684
-    ## 5      anger sadness 1.56672756 0.21068289
-    ## 6      anger    fear 0.23151646 0.63040167
-    ## 7      anger disgust 1.58555598 0.20796221
-    ## 8      anger     joy 1.48072134 0.22366170
-    ## 9       fear sadness 4.82589656 0.02803528
-    ## 10      fear   anger 1.43286840 0.23129688
-    ## 11      fear disgust 3.69573749 0.05455166
-    ## 12      fear     joy 0.29418749 0.58754950
-    ## 13   disgust sadness 0.49963246 0.47966166
-    ## 14   disgust   anger 2.59283793 0.10734784
-    ## 15   disgust    fear 0.04674062 0.82883513
-    ## 16   disgust     joy 0.89811776 0.34328691
-    ## 17       joy sadness 4.95427866 0.02602618
-    ## 18       joy   anger 4.24823604 0.03929112
-    ## 19       joy    fear 2.78557707 0.09511643
-    ## 20       joy disgust 2.40630377 0.12084740
+    ##    predictor  causes     chisq          p
+    ## 1    sadness   anger 4.5421893 0.20855783
+    ## 2    sadness    fear 4.7999251 0.18704769
+    ## 3    sadness disgust 5.5670731 0.13468149
+    ## 4    sadness     joy 5.6978636 0.12727166
+    ## 5      anger sadness 5.8683041 0.11819630
+    ## 6      anger    fear 0.7453611 0.86248617
+    ## 7      anger disgust 5.4002319 0.14472913
+    ## 8      anger     joy 5.1910865 0.15832781
+    ## 9       fear sadness 8.3329496 0.03960921
+    ## 10      fear   anger 5.1405545 0.16178966
+    ## 11      fear disgust 8.7497207 0.03281038
+    ## 12      fear     joy 3.4057290 0.33319613
+    ## 13   disgust sadness 0.9720797 0.80800740
+    ## 14   disgust   anger 1.7975009 0.61547893
+    ## 15   disgust    fear 2.3523422 0.50256775
+    ## 16   disgust     joy 2.1762655 0.53663844
+    ## 17       joy sadness 8.1216332 0.04356367
+    ## 18       joy   anger 7.6913579 0.05284023
+    ## 19       joy    fear 7.6626638 0.05352298
+    ## 20       joy disgust 8.9386477 0.03011782
 
 **Stage 4**
 
@@ -1020,7 +821,7 @@ ts.plot(emotions_LA[cp_emotions_LA[3]:cp_emotions_LA[4],1:5], col=c('red', 'blue
 legend("topright",c("Sadness","Anger","Fear","Disgust","Joy"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
 ```
 
-![](Analysis-LA_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](Analysis-LA_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ``` r
 # (1) order of integration
@@ -1207,101 +1008,101 @@ toda.yamamoto(var_result_4, max.oi=1)
 
 ``` r
 # Plot
-ts.plot(emotions_LA[cp_emotions_LA[4]:dim(d_emotions_LA)[1],1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series stage 5')
+ts.plot(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series stage 5')
 legend("topright",c("Sadness","Anger","Fear","Disgust","Joy"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
 ```
 
-![](Analysis-LA_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](Analysis-LA_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
 # (1) order of integration
-auto.arima(emotions_LA$sadness[cp_emotions_LA[4]:dim(d_emotions_LA)[1]])
+auto.arima(emotions_LA$sadness[cp_emotions_LA[4]:dim(emotions_LA)[1]])
 ```
 
-    ## Series: emotions_LA$sadness[cp_emotions_LA[4]:dim(d_emotions_LA)[1]] 
+    ## Series: emotions_LA$sadness[cp_emotions_LA[4]:dim(emotions_LA)[1]] 
     ## ARIMA(1,1,2) with drift 
     ## 
     ## Coefficients:
     ##          ar1      ma1     ma2    drift
-    ##       0.9822  -1.8626  0.8662  -0.0147
-    ## s.e.  0.0217   0.0273  0.0256   0.0091
+    ##       0.9852  -1.8756  0.8788  -0.0162
+    ## s.e.  0.0124   0.0191  0.0184   0.0098
     ## 
-    ## sigma^2 estimated as 2.299:  log likelihood=-2037.72
-    ## AIC=4085.43   AICc=4085.49   BIC=4110.5
+    ## sigma^2 estimated as 2.296:  log likelihood=-2038.69
+    ## AIC=4087.39   AICc=4087.44   BIC=4112.46
 
 ``` r
-auto.arima(emotions_LA$anger[cp_emotions_LA[4]:dim(d_emotions_LA)[1]])
+auto.arima(emotions_LA$anger[cp_emotions_LA[4]:dim(emotions_LA)[1]])
 ```
 
-    ## Series: emotions_LA$anger[cp_emotions_LA[4]:dim(d_emotions_LA)[1]] 
+    ## Series: emotions_LA$anger[cp_emotions_LA[4]:dim(emotions_LA)[1]] 
     ## ARIMA(1,1,2) with drift 
     ## 
     ## Coefficients:
     ##           ar1     ma1      ma2    drift
-    ##       -0.9405  0.0897  -0.8272  -0.0085
-    ## s.e.   0.0496  0.0468   0.0395   0.0040
+    ##       -0.9410  0.0901  -0.8275  -0.0085
+    ## s.e.   0.0495  0.0467   0.0394   0.0040
     ## 
-    ## sigma^2 estimated as 0.9741:  log likelihood=-1560.58
-    ## AIC=3131.16   AICc=3131.21   BIC=3156.22
+    ## sigma^2 estimated as 0.9733:  log likelihood=-1561.5
+    ## AIC=3133   AICc=3133.06   BIC=3158.07
 
 ``` r
-auto.arima(emotions_LA$fear[cp_emotions_LA[4]:dim(d_emotions_LA)[1]])
+auto.arima(emotions_LA$fear[cp_emotions_LA[4]:dim(emotions_LA)[1]])
 ```
 
-    ## Series: emotions_LA$fear[cp_emotions_LA[4]:dim(d_emotions_LA)[1]] 
+    ## Series: emotions_LA$fear[cp_emotions_LA[4]:dim(emotions_LA)[1]] 
     ## ARIMA(1,1,2) with drift 
     ## 
     ## Coefficients:
     ##           ar1      ma1      ma2    drift
-    ##       -0.1359  -0.7609  -0.1050  -0.0089
-    ## s.e.   0.7358   0.7396   0.6549   0.0040
+    ##       -0.1747  -0.7234  -0.1385  -0.0087
+    ## s.e.   0.8586   0.8655   0.7678   0.0040
     ## 
-    ## sigma^2 estimated as 1.27:  log likelihood=-1708.15
-    ## AIC=3426.31   AICc=3426.36   BIC=3451.37
+    ## sigma^2 estimated as 1.269:  log likelihood=-1709.19
+    ## AIC=3428.39   AICc=3428.44   BIC=3453.46
 
 ``` r
-auto.arima(emotions_LA$disgust[cp_emotions_LA[4]:dim(d_emotions_LA)[1]])
+auto.arima(emotions_LA$disgust[cp_emotions_LA[4]:dim(emotions_LA)[1]])
 ```
 
-    ## Series: emotions_LA$disgust[cp_emotions_LA[4]:dim(d_emotions_LA)[1]] 
+    ## Series: emotions_LA$disgust[cp_emotions_LA[4]:dim(emotions_LA)[1]] 
     ## ARIMA(1,1,2) with drift 
     ## 
     ## Coefficients:
     ##           ar1     ma1      ma2    drift
-    ##       -0.9134  0.0614  -0.8103  -0.0076
-    ## s.e.   0.0661  0.0615   0.0521   0.0033
+    ##       -0.9130  0.0610  -0.8101  -0.0076
+    ## s.e.   0.0665  0.0619   0.0524   0.0033
     ## 
-    ## sigma^2 estimated as 0.7109:  log likelihood=-1385.57
-    ## AIC=2781.14   AICc=2781.2   BIC=2806.21
+    ## sigma^2 estimated as 0.7103:  log likelihood=-1386.34
+    ## AIC=2782.68   AICc=2782.73   BIC=2807.75
 
 ``` r
-auto.arima(emotions_LA$joy[cp_emotions_LA[4]:dim(d_emotions_LA)[1]])
+auto.arima(emotions_LA$joy[cp_emotions_LA[4]:dim(emotions_LA)[1]])
 ```
 
-    ## Series: emotions_LA$joy[cp_emotions_LA[4]:dim(d_emotions_LA)[1]] 
+    ## Series: emotions_LA$joy[cp_emotions_LA[4]:dim(emotions_LA)[1]] 
     ## ARIMA(1,1,1) with drift 
     ## 
     ## Coefficients:
     ##          ar1      ma1    drift
-    ##       0.0076  -0.8970  -0.0133
+    ##       0.0079  -0.8971  -0.0134
     ## s.e.  0.0331   0.0136   0.0050
     ## 
-    ## sigma^2 estimated as 2.508:  log likelihood=-2086.47
-    ## AIC=4180.94   AICc=4180.98   BIC=4200.99
+    ## sigma^2 estimated as 2.506:  log likelihood=-2087.89
+    ## AIC=4183.78   AICc=4183.82   BIC=4203.84
 
 ``` r
 # (2) lag selection
-var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[4]:dim(d_emotions_LA)[1],1:5], lag=10)
+var_lag <- tsDyn::lags.select(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], lag=30, include='trend')
 var_lag
 ```
 
-    ## Best AIC:  lag= 9 
+    ## Best AIC:  lag= 8 
     ## Best BIC:  lag= 2 
     ## Best HQ :  lag= 3
 
 ``` r
 # (3) Cointegration
-coi_5 <- ca.jo(emotions_LA[cp_emotions_LA[4]:dim(d_emotions_LA)[1],1:5], type = 'trace', K=3)
+coi_5 <- ca.jo(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], type = 'trace', K=8)
 summary(coi_5)
 ```
 
@@ -1313,52 +1114,51 @@ summary(coi_5)
     ## Test type: trace statistic , with linear trend 
     ## 
     ## Eigenvalues (lambda):
-    ## [1] 0.26105617 0.25026777 0.20755440 0.18684362 0.01991889
+    ## [1] 0.132067610 0.112750170 0.093430006 0.057730803 0.008780241
     ## 
     ## Values of teststatistic and critical values of test:
     ## 
-    ##             test 10pct  5pct  1pct
-    ## r <= 4 |   22.31  6.50  8.18 11.65
-    ## r <= 3 |  251.69 15.66 17.95 23.52
-    ## r <= 2 |  509.68 28.71 31.52 37.22
-    ## r <= 1 |  829.11 45.23 48.28 55.43
-    ## r = 0  | 1164.62 66.49 70.60 78.87
+    ##            test 10pct  5pct  1pct
+    ## r <= 4 |   9.75  6.50  8.18 11.65
+    ## r <= 3 |  75.45 15.66 17.95 23.52
+    ## r <= 2 | 183.84 28.71 31.52 37.22
+    ## r <= 1 | 316.03 45.23 48.28 55.43
+    ## r = 0  | 472.54 66.49 70.60 78.87
     ## 
     ## Eigenvectors, normalised to first column:
     ## (These are the cointegration relations)
     ## 
-    ##            sadness.l3   anger.l3    fear.l3 disgust.l3   joy.l3
-    ## sadness.l3  1.0000000   1.000000   1.000000  1.0000000 1.000000
-    ## anger.l3   -0.2795480 -11.424884  13.920869 -0.5362891 5.661827
-    ## fear.l3    -0.3550030   8.052648   7.183086 -1.2239992 2.785615
-    ## disgust.l3 -1.3014485   6.504400 -12.056060  1.8446248 3.170875
-    ## joy.l3      0.1030088  -2.528983  -7.421630 -0.9080008 4.680471
+    ##             sadness.l8   anger.l8    fear.l8 disgust.l8     joy.l8
+    ## sadness.l8  1.00000000   1.000000  1.0000000  1.0000000  1.0000000
+    ## anger.l8    1.04820404  -6.019661 -1.8359938 -0.3774849 -0.8340387
+    ## fear.l8    -0.35364368  16.916827  0.3205328 -1.4802529 -0.3539934
+    ## disgust.l8 -2.42503792  15.652170 -0.3806405  0.7400187 -0.1727352
+    ## joy.l8     -0.09297642 -15.977416  0.1177292 -0.2492190  2.1939081
     ## 
     ## Weights W:
     ## (This is the loading matrix)
     ## 
-    ##           sadness.l3     anger.l3       fear.l3  disgust.l3       joy.l3
-    ## sadness.d -0.3768556 -0.017313153 -0.0237536434 -0.21165090 -0.004820514
-    ## anger.d    0.2504527  0.034510963 -0.0275959212 -0.04747561 -0.002746672
-    ## fear.d     0.1407547 -0.057215822 -0.0288498684  0.09137068 -0.002890693
-    ## disgust.d  0.3674366 -0.003534456 -0.0001549377 -0.13212979 -0.002546043
-    ## joy.d     -0.1381016  0.020420458  0.0245164947  0.19658924 -0.005363922
+    ##            sadness.l8    anger.l8     fear.l8  disgust.l8       joy.l8
+    ## sadness.d -0.44407381 -0.02603780  0.03462775 -0.21729319 -0.013869438
+    ## anger.d   -0.30671102 -0.01357913  0.37052832 -0.02179849 -0.006637258
+    ## fear.d    -0.15274425 -0.03088732 -0.03492188  0.13764438 -0.008452694
+    ## disgust.d  0.13726958 -0.01593935  0.21553898 -0.11089881 -0.006766753
+    ## joy.d      0.04852625  0.01042982  0.12962067  0.08180400 -0.019116325
 
 ``` r
 # (4) VAR
-var_result_5 <- VAR(emotions_LA[cp_emotions_LA[4]:dim(d_emotions_LA)[1],1:5], p=9)
+var_result_5 <- VAR(emotions_LA[cp_emotions_LA[4]:dim(emotions_LA)[1],1:5], p=8, type='trend')
 
-#VAR stabilty
+#VAR stability
 roots(var_result_5)
 ```
 
-    ##  [1] 0.9910909 0.8678667 0.8132879 0.8132879 0.8085453 0.8085453 0.8045754
-    ##  [8] 0.8045754 0.7896842 0.7896842 0.7894859 0.7893624 0.7893624 0.7893045
-    ## [15] 0.7889594 0.7889594 0.7874825 0.7874825 0.7806310 0.7806310 0.7738450
-    ## [22] 0.7738450 0.7585444 0.7585444 0.7496795 0.7496795 0.7479657 0.7479657
-    ## [29] 0.7355585 0.7355585 0.7220752 0.7220752 0.7191624 0.7054091 0.7054091
-    ## [36] 0.6743623 0.6743623 0.6273393 0.6273393 0.6237170 0.6237170 0.5916491
-    ## [43] 0.5916491 0.3244455 0.3244455
+    ##  [1] 0.9949405 0.8646049 0.8122300 0.8122300 0.7979088 0.7979088 0.7961994
+    ##  [8] 0.7961994 0.7847384 0.7847384 0.7806534 0.7734099 0.7734099 0.7576389
+    ## [15] 0.7576389 0.7393453 0.7393453 0.7340347 0.7340347 0.7294652 0.7294652
+    ## [22] 0.7219077 0.7219077 0.7165447 0.7165447 0.6969200 0.6969200 0.6914831
+    ## [29] 0.6914831 0.6900455 0.6900455 0.6858546 0.6507737 0.6236225 0.6236225
+    ## [36] 0.5860754 0.5860754 0.5736283 0.5736283 0.2052031
 
 ``` r
 serial.test(var_result_5)
@@ -1368,7 +1168,7 @@ serial.test(var_result_5)
     ##  Portmanteau Test (asymptotic)
     ## 
     ## data:  Residuals of VAR object var_result_5
-    ## Chi-squared = 288.83, df = 175, p-value = 1.32e-07
+    ## Chi-squared = 336.5, df = 200, p-value = 5.092e-09
 
 ``` r
 # (5) Toda-Yamamoto
@@ -1377,23 +1177,23 @@ toda.yamamoto(var_result_5, max.oi=1)
 ```
 
     ##    predictor  causes     chisq            p
-    ## 1    sadness   anger 11.427864 2.475167e-01
-    ## 2    sadness    fear 13.373557 1.464188e-01
-    ## 3    sadness disgust 14.036520 1.210321e-01
-    ## 4    sadness     joy  5.929068 7.469960e-01
-    ## 5      anger sadness 16.878396 5.065470e-02
-    ## 6      anger    fear  4.308338 8.899723e-01
-    ## 7      anger disgust  8.803836 4.555755e-01
-    ## 8      anger     joy 10.139335 3.393235e-01
-    ## 9       fear sadness  3.227897 9.545699e-01
-    ## 10      fear   anger  5.785192 7.612098e-01
-    ## 11      fear disgust  7.871378 5.471586e-01
-    ## 12      fear     joy  5.102559 8.252778e-01
-    ## 13   disgust sadness  9.651773 3.794044e-01
-    ## 14   disgust   anger 13.100318 1.581193e-01
-    ## 15   disgust    fear  2.859890 9.695915e-01
-    ## 16   disgust     joy 11.896232 2.192227e-01
-    ## 17       joy sadness 58.542879 2.556730e-09
-    ## 18       joy   anger 57.746532 3.635308e-09
-    ## 19       joy    fear 77.430707 5.224918e-13
-    ## 20       joy disgust 60.185790 1.234572e-09
+    ## 1    sadness   anger 10.045343 2.618578e-01
+    ## 2    sadness    fear 14.026299 8.108251e-02
+    ## 3    sadness disgust 14.473278 7.023355e-02
+    ## 4    sadness     joy  6.103029 6.356922e-01
+    ## 5      anger sadness 15.498689 5.014397e-02
+    ## 6      anger    fear  4.275699 8.314317e-01
+    ## 7      anger disgust  4.936333 7.643588e-01
+    ## 8      anger     joy  9.323864 3.157161e-01
+    ## 9       fear sadness  2.173292 9.752329e-01
+    ## 10      fear   anger  6.003754 6.468113e-01
+    ## 11      fear disgust  7.768045 4.564501e-01
+    ## 12      fear     joy  5.632950 6.882699e-01
+    ## 13   disgust sadness  9.652464 2.902703e-01
+    ## 14   disgust   anger 12.357699 1.359435e-01
+    ## 15   disgust    fear  3.102921 9.277335e-01
+    ## 16   disgust     joy  5.049432 7.522799e-01
+    ## 17       joy sadness 60.366347 3.949940e-10
+    ## 18       joy   anger 56.730090 2.032828e-09
+    ## 19       joy    fear 77.173769 1.808324e-13
+    ## 20       joy disgust 58.831374 7.897832e-10
