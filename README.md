@@ -16,7 +16,7 @@ Flores, P. M. & Hilbert, M. (2023). Temporal communication dynamics in the after
 2. Open the project in RStudio
 3. Install package management dependencies:
    ```r
-   install.packages("renv")
+   install.packages("renv", repos="https://cloud.r-project.org")
    renv::restore()
    ```
 4. Open and run `Supplemental Material.Rmd` to replicate the analysis
