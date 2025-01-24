@@ -1,7 +1,12 @@
 ---
 title: "Supplemental Material"
-output: html_document
+output:
+  html_document:
+    keep_md: true
+  md_document:
+    variant: gfm
 ---
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
