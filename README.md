@@ -8,6 +8,7 @@ Flores, P. M. & Hilbert, M. (2023). Temporal communication dynamics in the after
 ## Repository Contents
 - `data/`: Datasets for LA, Mexico, and Turkey cases
 - `Supplemental Material.Rmd`: R Markdown source file for analysis replication
+- `Supplemental-Material.md`: Markdown file for better Github visualization
 - `renv.lock`: Package dependencies and versions used in the analysis
 
 ## Getting Started
