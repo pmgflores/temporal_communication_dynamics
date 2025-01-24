@@ -1,0 +1,2108 @@
+---
+title: "Supplemental Material"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1) Data preparation
+
+``` {r}
+
+Base_LA <- read.csv(here::here("data", "SI_1_DDBB_LA.csv"), header = TRUE)
+Base_MX <- read.csv(here::here("data", "SI_2_DDBB_Mexico.csv"), header = TRUE)
+Base_TK <- read.csv(here::here("data", "SI_3_DDBB_Turkey.csv"), header = TRUE)
+
+#Creation of dataframes
+sadness_LA <- aggregate(sadness~one_minutes, data = Base_LA, sum)$sadness
+anger_LA <- aggregate(anger~one_minutes, data = Base_LA, sum)$anger
+fear_LA <- aggregate(fear~one_minutes, data = Base_LA, sum)$fear
+disgust_LA <- aggregate(disgust~one_minutes, data = Base_LA, sum)$disgust
+joy_LA <- aggregate(joy~one_minutes, data = Base_LA, sum)$joy
+count_LA <- aggregate(count~one_minutes, data = Base_LA, sum)$count
+
+emotions_LA <- as.data.frame(cbind(sadness_LA, anger_LA, fear_LA, disgust_LA, joy_LA, count_LA))
+colnames(emotions_LA) <- c('sadness', 'anger', 'fear', 'disgust', 'joy', 'count')
+
+sadness_MX <- aggregate(sadness~one_minutes, data = Base_MX, sum)$sadness
+anger_MX <- aggregate(anger~one_minutes, data = Base_MX, sum)$anger
+fear_MX <- aggregate(fear~one_minutes, data = Base_MX, sum)$fear
+disgust_MX <- aggregate(disgust~one_minutes, data = Base_MX, sum)$disgust
+joy_MX <- aggregate(joy~one_minutes, data = Base_MX, sum)$joy
+count_MX <- aggregate(count~one_minutes, data = Base_MX, sum)$count
+
+emotions_MX <- as.data.frame(cbind(sadness_MX, anger_MX, fear_MX, disgust_MX, joy_MX, count_MX))
+colnames(emotions_MX) <- c('sadness', 'anger', 'fear', 'disgust', 'joy', 'count')
+
+sadness_TK <- aggregate(sadness~one_minutes, data = Base_TK, sum)$sadness
+anger_TK <- aggregate(anger~one_minutes, data = Base_TK, sum)$anger
+fear_TK <- aggregate(fear~one_minutes, data = Base_TK, sum)$fear
+disgust_TK <- aggregate(disgust~one_minutes, data = Base_TK, sum)$disgust
+joy_TK <- aggregate(joy~one_minutes, data = Base_TK, sum)$joy
+count_TK <- aggregate(count~one_minutes, data = Base_TK, sum)$count
+
+emotions_TK <- as.data.frame(cbind(sadness_TK, anger_TK, fear_TK, disgust_TK, joy_TK, count_TK))
+colnames(emotions_TK) <- c('sadness', 'anger', 'fear', 'disgust', 'joy', 'count')
+
+#Variable count normalized
+emotions_LA['count_norm']<- emotions_LA$count/max(emotions_LA$count)
+emotions_MX['count_norm']<- emotions_MX$count/max(emotions_MX$count)
+emotions_TK['count_norm']<- emotions_TK$count/max(emotions_TK$count)
+
+#Variables sum of emotions
+emotions_LA['emo_sum']<- emotions_LA$sadness + emotions_LA$anger + emotions_LA$fear +
+                         emotions_LA$disgust + emotions_LA$joy
+emotions_MX['emo_sum']<- emotions_MX$sadness + emotions_MX$anger + emotions_MX$fear +
+                         emotions_MX$disgust + emotions_MX$joy
+emotions_TK['emo_sum']<- emotions_TK$sadness + emotions_TK$anger + emotions_TK$fear +
+                         emotions_TK$disgust + emotions_TK$joy
+
+#Variables sum of emotions normalized
+emotions_LA['sum_norm']<- emotions_LA$emo_sum/max(emotions_LA$emo_sum)
+emotions_MX['sum_norm']<- emotions_MX$emo_sum/max(emotions_MX$emo_sum)
+emotions_TK['sum_norm']<- emotions_TK$emo_sum/max(emotions_TK$emo_sum)
+```
+
+
+#### 1.1) Data descriptive analysis
+
+A summary of the data for each case studied.
+
+``` {r}
+
+summary(Base_LA)
+
+summary(Base_MX)
+
+summary(Base_TK)
+```
+
+### 2) Joy assessment
+
+#### 2.1) Name update
+
+After reassessing tweets with high level of joy, we updated the name of variable.
+
+``` {r}
+names(emotions_LA)[5] <- "interest"
+names(emotions_MX)[5] <- "interest"
+names(emotions_TK)[5] <- "interest"
+```
+
+### 3) Timeseries plots
+
+#### 3.1) Figure S.F. 1: Time series count and sum all emotions
+
+Supplemental Figure 1 shows the time series of tweets count and sum of
+all emotions for the cases LA, MX , and TK.
+
+``` {r}
+library(ggplot2)
+
+#Timeseries plots
+par(mfrow=c(2,1))
+ts.plot(cbind(emotions_LA$count, emotions_MX$count, emotions_TK$count), col=c('red', 'blue', 'skyblue'),
+        main='(a) Timeseries Count')
+legend('topright',c('LA','Mexico','Turkey'),col=c('red', 'blue', 'skyblue'),lwd=c(2), bty='n')
+
+ts.plot(cbind(emotions_LA$emo_sum, emotions_MX$emo_sum, emotions_TK$emo_sum), col=c('red', 'blue', 'skyblue'),
+        main='(b) Timeseries Sum All Emotions')
+legend('topright',c('LA','Mexico','Turkey'),col=c('red', 'blue', 'skyblue'),lwd=c(2), bty='n')
+```
+ 
+
+#### 3.2) Figure S.F. 2: Time series count and sum all emotions normalized
+
+Supplemental Figure 2 shows the comparison of the three cases by
+normalizing using the maximum number of tweets (a) or sum of all
+emotions (b). After normalyzing the number obtained are between 0 and 1.
+
+``` {r}
+#Time series normalized plots
+par(mfrow=c(2,1))
+ts.plot(cbind(emotions_LA$count_norm, emotions_MX$count_norm, emotions_TK$count_norm), 
+        col=c('red', 'blue', 'skyblue'),
+        main='(a) Timeseries Count (normalized)')
+legend('topright',c('LA','Mexico','Turkey'),col=c('red', 'blue', 'skyblue'),lwd=c(2), bty='n')
+
+ts.plot(cbind(emotions_LA$sum_norm, emotions_MX$sum_norm, emotions_TK$sum_norm), 
+        col=c('red', 'blue', 'skyblue'),
+        main='(b) Timeseries Sum All Emotions (normalized)')
+legend('topright',c('LA','Mexico','Turkey'),col=c('red', 'blue', 'skyblue'),lwd=c(2), bty='n')
+```
+
+
+### 4) Correlation
+
+This correlation analysis shows the high and positive level of
+correlation between the time series of emotions the count of the number
+of tweets for each case. From here we conclude that the stages defined
+by the structural changes in the time series of the number of tweets is
+a good proxy to analyze the time series of emotions. The code shows the
+correlation between tweets count and anger for the LA and MX cases, and
+the correlation between tweets count and disgust for the TK case because
+are the smallest and cited in the manuscript.
+
+``` {r}
+cor(emotions_LA)
+
+cor(emotions_MX)
+
+cor(emotions_TK)
+
+cor.test(emotions_LA$count, emotions_LA$anger)
+
+cor.test(emotions_MX$count, emotions_MX$anger)
+
+cor.test(emotions_TK$count, emotions_TK$disgust)
+```
+
+
+### 5) Change point analysis
+
+Changepoint analysis assumes that having a sequence of data with $n$
+datapoints $y_1, y_2, ... , y_n$ it is possible to generate $m$ changepoints $\tau_1, \tau_2, ... , \tau_m$. Defining
+$\tau_0 = y_1$ and $\tau_m = y_n$ and assuming that the changepoints are ordered such that $\tau_i < \tau_j$ if, and only if,
+$i<j$. Then, the $m$ changepoints will split the data into $m+1$ segments. Here an implementation of the PELT algorithm (Killick et al., 2012) was used to identify the structural changes.
+
+``` {r}
+library(changepoint)
+
+#Change points of the variable count
+cp_LA_count <- cpt.var(emotions_LA$count, method = 'PELT')
+cp_MX_count <- cpt.var(emotions_MX$count, method = 'PELT')
+cp_TK_count <- cpt.var(emotions_TK$count, method = 'PELT')
+
+
+#Change points
+cpts(cp_LA_count)
+
+cpts(cp_MX_count)
+
+cpts(cp_TK_count)
+
+```
+
+#### 5.1) Figure S.F. 3: Time series and change points
+
+Supplemental Figure 3 presents the plot of the three cases including the
+changepoints that were computed using the PELT algorithm.
+
+``` {r}
+#Time variable for the timeseries plot
+emotions_LA['time'] <- seq(1,1440)
+emotions_MX['time'] <- seq(1,1440)
+emotions_TK['time'] <- seq(1,1440)
+
+#Plots with change points
+ts_cp_LA <- ggplot(emotions_LA, aes(time, count)) +
+  geom_line() +
+  geom_vline(xintercept=as.vector(cpts(cp_LA_count)), col='red', size = .75) +
+  ggtitle("(1) LA Earthquake") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ts_cp_MX <- ggplot(emotions_MX, aes(time, count)) +
+  geom_line() +
+  geom_vline(xintercept=as.vector(cpts(cp_MX_count)), col='red', size = .75) +
+  ggtitle("(b) Mexico Earthquake") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ts_cp_TK <- ggplot(emotions_TK, aes(time, count)) +
+  geom_line() +
+  geom_vline(xintercept=as.vector(cpts(cp_TK_count)), col='red', size = .75) +
+  ggtitle("(c) Turkey Earthquake") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+#Plotting the three timeseries
+library(gridExtra)
+
+grid.arrange(ts_cp_LA, ts_cp_MX, ts_cp_TK, ncol = 1, nrow = 3)
+
+```
+
+
+#### 5.2) Functions to review changepoint analysis
+
+Set of functions used later to describe statistically the different
+stages defined by the changepoint analysis.
+
+``` {r}
+################################
+## Function to separate stages##
+################################
+
+timeframes <- function(stationary_ts,change_points){
+  
+  result <- list()
+  
+  for (i in 1:(length(change_points)+1)){
+    
+    if (i==1){
+      
+      aux1 = change_points[i]
+      result[[i]] <- stationary_ts[1:aux1]
+    } 
+    
+    else if (i==(length(change_points)+1)){
+      
+      aux0 = change_points[i-1]
+      result[[i]] <- stationary_ts[(aux0+1):(length(stationary_ts))]
+    } 
+    
+    else{
+      
+      aux0 = change_points[i-1]
+      aux1 = change_points[i]
+      result[[i]] <- stationary_ts[(aux0+1):aux1]
+    }
+    
+  }
+  return(result)
+}
+
+
+#########################################
+## Function for the standard deviation ##
+#########################################
+
+
+sd.list <- function(A_list){
+
+  result <- list()
+  for (i in 1:length(A_list)){
+  result[i] <- sd(A_list[[i]]) 
+  
+  }
+  return(result)  
+}
+
+###########################
+## Function for the mean ##
+###########################
+
+mean.list <- function(A_list){
+
+  result <- list()
+  for (i in 1:length(A_list)){
+  result[i] <- mean(A_list[[i]]) 
+  
+  }
+  return(result)  
+}
+
+##############################
+## Function for the maximum ##
+##############################
+
+max.list <- function(A_list){
+
+  result <- list()
+  for (i in 1:length(A_list)){
+  result[i] <- max(A_list[[i]]) 
+  
+  }
+  return(result)  
+}
+```
+
+#### 5.3) Standard deviation of number of tweets by stage
+
+Here we calculate the standard deviation for the different stages
+defined by the changepoint analysis.
+
+``` {r}
+#Separation of LA stages based on change point results
+stages_LA <- timeframes(emotions_LA$count,cpts(cp_LA_count))
+stages_MX <- timeframes(emotions_MX$count,cpts(cp_MX_count))
+stages_TK <- timeframes(emotions_TK$count,cpts(cp_TK_count))
+
+#Compute all the standard deviations by stage defined by change point analysis
+sd_LA <- sd.list(stages_LA)
+sd_MX <- sd.list(stages_MX)
+sd_TK <- sd.list(stages_TK)
+
+sd_LA
+
+sd_MX
+
+sd_TK
+```
+
+
+#### 5.4) Mean of number of tweets by stage
+
+Here we calculate the mean for the different stages defined by the
+changepoint analysis.
+
+``` {r}
+#Compute all the means by stage defined by change point analysis
+m_LA <- mean.list(timeframes(emotions_LA$count,c(88,182,248)))
+m_MX <- mean.list(timeframes(emotions_MX$count,c(118,217,300)))
+m_TK <- mean.list(timeframes(emotions_TK$count,c(167,622,701)))
+
+m_LA
+
+m_MX
+
+m_TK
+```
+
+#### 5.5) Slope of linear trend of the number of tweets by stage
+
+Here we calculate slope of the linear trend for the different stages
+defined by the changepoint analysis.
+
+``` {r}
+#Sorting data in dataframe structure
+data_LA <- as.data.frame(rbind(cbind(stages_LA[[1]],'st1'), cbind(stages_LA[[2]], 'st2'), 
+                               cbind(stages_LA[[3]],'st3'), cbind(stages_LA[[4]], 'st4'),
+                               cbind(stages_LA[[5]],'st5')))
+
+colnames(data_LA) <- c('count', 'stage')
+data_LA$count <-  as.numeric(data_LA$count)
+data_LA$time <- seq(1,1440)
+
+data_MX <- as.data.frame(rbind(cbind(stages_MX[[1]],'st1'), cbind(stages_MX[[2]], 'st2'), 
+                               cbind(stages_MX[[3]],'st3'), cbind(stages_MX[[4]], 'st4'),
+                               cbind(stages_MX[[5]],'st5'), cbind(stages_MX[[6]], 'st6')))
+
+colnames(data_MX) <- c('count', 'stage')
+data_MX$count <-  as.numeric(data_MX$count)
+data_MX$time <- seq(1,1440)
+
+data_TK <- as.data.frame(rbind(cbind(stages_TK[[1]],'st1'), cbind(stages_TK[[2]], 'st2'), 
+                               cbind(stages_TK[[3]],'st3'), cbind(stages_TK[[4]], 'st4'),
+                               cbind(stages_TK[[5]],'st5'), cbind(stages_TK[[6]], 'st6')))
+
+colnames(data_TK) <- c('count', 'stage')
+data_TK$count <-  as.numeric(data_TK$count)
+data_TK$time <- seq(1,1440)
+
+
+library(data.table)
+d_LA <- data.table(data_LA)
+d_LA[,as.list(coef(lm(count ~ time))), by = stage]
+
+d_MX <- data.table(data_MX)
+d_MX[,as.list(coef(lm(count ~ time))), by = stage]
+
+d_TK <- data.table(data_TK)
+d_TK[,as.list(coef(lm(count ~ time))), by = stage]
+```
+
+#### 5.6) Figure Pennebaker stages and change point analysis
+
+##### 5.6.1) LA case
+
+``` {r}
+#Stages variable defined by the change point results
+emotions_LA['stages'] <- c(rep('st 1', length(stages_LA[[1]])), rep('st 2A', length(stages_LA[[2]])),
+                           rep('st 2B', length(stages_LA[[3]])), rep('st 3A', length(stages_LA[[4]])),
+                           rep('st 3B', length(stages_LA[[5]])))
+
+#Stages variable defined by the theoretical model and change point analysis
+emotions_LA['penn_stages'] <- c(rep('Emergency', length(stages_LA[[1]])), rep('Inhibition', length(stages_LA[[2]])),
+                           rep('Inhibition', length(stages_LA[[3]])), rep('Adaptation', length(stages_LA[[4]])),
+                           rep('Adaptation', length(stages_LA[[5]])))
+
+emotions_LA$penn_stages <- factor(emotions_LA$penn_stages, levels=c('Emergency', 'Inhibition', 'Adaptation'))
+
+#Plot with Pennebaker stages and change points
+ts_penn_cp_LA <- ggplot(emotions_LA, aes(time, count, penn_stages)) +
+  geom_rect(aes(NULL, NULL, xmin=time-0.5, xmax=time+0.5, 
+                ymin=min(count), ymax=max(count), fill=penn_stages)) +
+  scale_fill_grey(start = .75, end = .97) +
+  guides(fill=guide_legend(title="Pennebaker Stages")) +
+  geom_line() +
+  geom_vline(xintercept=as.vector(cpts(cp_LA_count)), col='red', size = .75) +
+  ggtitle("(a) LA Earthquake") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, size = 12))
+```
+
+##### 5.6.2) Mexico case
+
+``` {r}
+#Stages variable defined by the change point results
+emotions_MX['stages'] <- c(rep('st 1', length(stages_MX[[1]])), rep('st 2A', length(stages_MX[[2]])),
+                           rep('st 2B', length(stages_MX[[3]])), rep('st 3A', length(stages_MX[[4]])),
+                           rep('st 3B', length(stages_MX[[5]])), rep('st 3C', length(stages_MX[[6]])))
+
+#Stages variable defined by the theoretical model and change point analysis
+emotions_MX['penn_stages'] <- c(rep('Emergency', length(stages_MX[[1]])), rep('Inhibition', length(stages_MX[[2]])),
+                           rep('Inhibition', length(stages_MX[[3]])), rep('Adaptation', length(stages_MX[[4]])),
+                           rep('Adaptation', length(stages_MX[[5]])), rep('Adaptation', length(stages_MX[[6]])))
+
+emotions_MX$penn_stages <- factor(emotions_MX$penn_stages, levels=c('Emergency', 'Inhibition', 'Adaptation'))
+
+#Plot with Pennebaker stages and change points
+ts_penn_cp_MX <- ggplot(emotions_MX, aes(time, count, penn_stages)) +
+  geom_rect(aes(NULL, NULL, xmin=time-0.5, xmax=time+0.5, 
+                ymin=min(count), ymax=max(count), fill=penn_stages)) +
+  scale_fill_grey(start = .75, end = .97) +
+  guides(fill=guide_legend(title="Pennebaker Stages")) +
+  geom_line() +
+  geom_vline(xintercept=as.vector(cpts(cp_MX_count)), col='red', size = .75) +
+  ggtitle("(b) Mexico Earthquake") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, size = 12))
+```
+
+##### 5.6.3) Turkey case
+
+``` {r}
+#Stages variable defined by the change point results
+emotions_TK['stages'] <- c(rep('st 1A', length(stages_TK[[1]])), rep('st 1B', length(stages_TK[[2]])),
+                           rep('st 2A', length(stages_TK[[3]])), rep('st 2B', length(stages_TK[[4]])),
+                           rep('st 3A', length(stages_TK[[5]])), rep('st 3B', length(stages_TK[[6]])))
+
+#Stages variable defined by the theoretical model and change point analysis
+emotions_TK['penn_stages'] <- c(rep('Emergency', length(stages_TK[[1]])), rep('Emergency', length(stages_TK[[2]])),
+                           rep('Inhibition', length(stages_TK[[3]])), rep('Inhibition', length(stages_TK[[4]])),
+                           rep('Adaptation', length(stages_TK[[5]])), rep('Adaptation', length(stages_TK[[6]])))
+
+emotions_TK$penn_stages <- factor(emotions_TK$penn_stages, levels=c('Emergency', 'Inhibition', 'Adaptation'))
+
+#Plot with Pennebaker stages and change points
+ts_penn_cp_TK <- ggplot(emotions_TK, aes(time, count, penn_stages)) +
+  geom_rect(aes(NULL, NULL, xmin=time-0.5, xmax=time+0.5, 
+                ymin=min(count), ymax=max(count), fill=penn_stages)) +
+  scale_fill_grey(start = .75, end = .97) +
+  guides(fill=guide_legend(title="Pennebaker Stages")) +
+  geom_line() +
+  geom_vline(xintercept=as.vector(cpts(cp_TK_count)), col='red', size = .75) +
+  ggtitle("(c) Turkey Earthquake") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, size = 12))
+```
+
+##### 5.6.4) Figure 1 manuscript
+
+Figure 1 included in the manuscript. It presents the intersection
+between the timeframes defined by the changepoint analysis and
+Pennebaker’s model.
+
+``` {r}
+#Plot
+library(ggpubr)
+
+ggarrange(ts_penn_cp_LA, ts_penn_cp_MX, ts_penn_cp_TK, ncol = 1, nrow = 3,
+          common.legend = TRUE, legend="bottom")
+```
+
+
+##### 5.6.5) Figure 2 manuscript
+
+Figure 2 included in the manuscript. It presents the percentage of
+reduction on the average number of tweets.
+
+``` {r}
+library(reshape2)
+
+m_LA <- c(m_LA[[1]],m_LA[[2]],m_LA[[3]],m_LA[[4]])
+m_MX <- c(m_MX[[1]],m_MX[[2]],m_MX[[3]],m_MX[[4]])
+m_TK <- c(m_TK[[1]],m_TK[[2]],m_TK[[3]],m_TK[[4]])
+
+ts_mean_st <- as.data.frame(cbind(m_LA/max(m_LA), m_MX/max(m_MX), m_TK/max(m_TK), c(1,2,3,4)))
+colnames(ts_mean_st) <- c('LA', 'MX', 'TK', 'time')
+meltdf <- melt(ts_mean_st,id="time")
+colnames(meltdf) <- c('time', 'Earthquake', 'value')
+
+ts_mean_st <- as.data.frame(cbind(ts_mean_st, c('Emergency', 'Inhibition', 'Inhibition', 'Adaptation')))
+colnames(ts_mean_st) <- c('LA', 'MX', 'TK', 'time','st')
+ts_mean_st$st <- factor(ts_mean_st$st, levels=c('Emergency', 'Inhibition', 'Adaptation'))
+
+
+ggplot(ts_mean_st, aes(x=time)) + 
+  geom_rect(aes(NULL, NULL, xmin=as.numeric(time)-0.5, xmax=as.numeric(time)+0.5, 
+                ymin=0, ymax=1, fill=st)) +
+  scale_fill_grey(start = .75, end = .97) +
+  geom_line(meltdf,mapping=aes(x=time, y=value, colour=Earthquake, group=Earthquake, linetype=Earthquake)) +
+  geom_point(meltdf,mapping=aes(x=time,y=value, colour=Earthquake, group=Earthquake, shape=Earthquake)) +
+  guides(fill=guide_legend(title="Pennebaker Stages")) +
+  scale_y_continuous(name = 'Percentage', labels = scales::percent) +
+  geom_vline(xintercept=as.vector(c(1.5 , 2.5, 3.5)), col='red', size = .75) +
+  scale_x_discrete() +
+  #ggtitle("% of reduction on the average intensity") +
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5, size = 12)) +
+  annotate("label", x = 1, y = 0.6, label = "Emergency") +
+  annotate("label", x = 2, y = 0.6, label = "Inhibition A") +
+  annotate("label", x = 3, y = 0.6, label = "Inhibition B") +
+  annotate("label", x = 4, y = 0.6, label = "Adaptation") 
+```
+
+
+### 6) Description of emotions by stages
+
+#### 6.1) LA case
+
+Creation of bar graph for emotions by stages in LA case.
+
+``` {r}
+library(ggplot2)
+library(dplyr)
+
+#Change points selected
+cp_LA <- c(88, 182, 248)
+
+fear_LA <- timeframes(emotions_LA$fear,cp_LA)
+anger_LA <- timeframes(emotions_LA$anger,cp_LA)
+disgust_LA <- timeframes(emotions_LA$disgust,cp_LA)
+sadness_LA <- timeframes(emotions_LA$sadness,cp_LA)
+interest_LA <- timeframes(emotions_LA$interest,cp_LA)
+
+emotions <- c('fear', 'anger', 'disgust', 'sadness', 'interest')
+
+#Data transformation for the plot
+st <- rep('Emergency',5)
+value <- c(sum(fear_LA[[1]]),sum(anger_LA[[1]]),sum(disgust_LA[[1]]),
+           sum(sadness_LA[[1]]), sum(interest_LA[[1]]))
+st1_LA <- as.data.frame(cbind(st, value, emotions))
+
+st <- rep('Inhibition A',5)
+value <- c(sum(fear_LA[[2]]),sum(anger_LA[[2]]),sum(disgust_LA[[2]]),
+           sum(sadness_LA[[2]]), sum(interest_LA[[2]]))
+st2A_LA <- as.data.frame(cbind(st, value, emotions))
+
+st <- rep('Inhibition B',5)
+value <- c(sum(fear_LA[[3]]),sum(anger_LA[[3]]),sum(disgust_LA[[3]]),
+           sum(sadness_LA[[3]]), sum(interest_LA[[3]]))
+st2B_LA <- as.data.frame(cbind(st, value, emotions))
+
+st <- rep('Adaptation',5)
+value <- c(sum(fear_LA[[4]]),sum(anger_LA[[4]]),sum(disgust_LA[[4]]),
+           sum(sadness_LA[[4]]), sum(interest_LA[[4]]))
+st3_LA <- as.data.frame(cbind(st, value, emotions))
+
+
+graph_st_LA <- rbind(st1_LA, st2A_LA, st2B_LA, st3_LA)
+graph_st_LA$value <- as.numeric(graph_st_LA$value)
+ 
+#adding column with percentages
+graph_st_LA <- graph_st_LA %>%
+                group_by(st) %>% mutate(perc = value/sum(value))
+
+#Definition of the order to plot stages and emotions
+graph_st_LA$st <- factor(graph_st_LA$st, levels=c('Emergency', 'Inhibition A', 'Inhibition B', 'Adaptation'))
+graph_st_LA$emotions <- factor(graph_st_LA$emotions, levels=c('fear', 'anger', 'disgust', 'sadness', 'interest'))
+
+#Stacked Graph
+bgraph_LA <- graph_st_LA #Duplicate data for the graph
+levels(bgraph_LA$st) <- list('Eme' = 'Emergency', 'In A' = 'Inhibition A',
+                             'In B' = 'Inhibition B', 'Adp' = 'Adaptation')
+g_stacked_LA <- ggplot(bgraph_LA, aes(x = st, y = as.numeric(value), group=emotions)) +
+  geom_col(position = position_fill(), aes(fill= emotions)) +
+  geom_text(aes(label = scales::percent(perc, accuracy = 0.1)), position=position_fill(0.9), size=3, col='white') +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_fill_grey(start = .1, end = .8) + 
+  guides(fill=guide_legend(title="Emotions")) +
+  theme_bw()+
+  labs(x = "Stages", y = "Percentage") +
+  ggtitle("(a) LA Earthquake") +
+  theme(plot.title = element_text(hjust = 0.5))
+#g_stacked_LA
+
+
+#Bar graph
+g_bar_LA <- ggplot(graph_st_LA, aes(x = st, y = as.numeric(perc), group = emotions)) + 
+  geom_col(position = position_dodge(), aes(fill= emotions)) +
+  geom_text(aes(label = scales::percent(perc, accuracy = 0.1)), position=position_dodge(0.9), size=2, vjust=1) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_grey(start = .5, end = .95) +
+  theme_bw()+
+  labs(x = NULL, y = "Percentage") +
+  ggtitle("(a) LA Earthquake") +
+  theme(plot.title = element_text(hjust = 0.5)) #+ 
+#g_bar_LA
+```
+
+#### 6.2) Mexico case
+
+Creation of bar graph for emotions by stages in Mexico case.
+
+``` {r}
+#Change point selected
+cp_MX <- c(118, 217, 300)
+
+fear_MX <- timeframes(emotions_MX$fear,cp_MX)
+anger_MX <- timeframes(emotions_MX$anger,cp_MX)
+disgust_MX <- timeframes(emotions_MX$disgust,cp_MX)
+sadness_MX <- timeframes(emotions_MX$sadness,cp_MX)
+interest_MX <- timeframes(emotions_MX$interest,cp_MX)
+
+emotions <- c('fear', 'anger', 'disgust', 'sadness', 'interest')
+
+#Data transformation for the plot
+st <- rep('Emergency',5)
+value <- c(sum(fear_MX[[1]]),sum(anger_MX[[1]]),sum(disgust_MX[[1]]),
+           sum(sadness_MX[[1]]), sum(interest_MX[[1]]))
+st1_MX <- as.data.frame(cbind(st, value, emotions))
+
+st <- rep('Inhibition A',5)
+value <- c(sum(fear_MX[[2]]),sum(anger_MX[[2]]),sum(disgust_MX[[2]]),
+           sum(sadness_MX[[2]]), sum(interest_MX[[2]]))
+st2A_MX <- as.data.frame(cbind(st, value, emotions))
+
+st <- rep('Inhibition B',5)
+value <- c(sum(fear_MX[[3]]),sum(anger_MX[[3]]),sum(disgust_MX[[3]]),
+           sum(sadness_MX[[3]]), sum(interest_MX[[3]]))
+st2B_MX <- as.data.frame(cbind(st, value, emotions))
+
+st <- rep('Adaptation',5)
+value <- c(sum(fear_MX[[4]]),sum(anger_MX[[4]]),sum(disgust_MX[[4]]),
+           sum(sadness_MX[[4]]), sum(interest_MX[[4]]))
+st3_MX <- as.data.frame(cbind(st, value, emotions))
+
+
+graph_st_MX <- rbind(st1_MX, st2A_MX, st2B_MX, st3_MX)
+graph_st_MX$value <- as.numeric(graph_st_MX$value)
+ 
+#adding column with percentages
+graph_st_MX <- graph_st_MX %>%
+                group_by(st) %>% mutate(perc = value/sum(value))
+
+#Definition of the order to plot stages and emotions
+graph_st_MX$st <- factor(graph_st_MX$st, levels=c('Emergency', 'Inhibition A', 'Inhibition B', 'Adaptation'))
+graph_st_MX$emotions <- factor(graph_st_MX$emotions, levels=c('fear', 'anger', 'disgust', 'sadness', 'interest'))
+
+#Stacked Graph
+bgraph_MX <- graph_st_MX #Duplicate data for the graph
+levels(bgraph_MX$st) <- list('Eme' = 'Emergency', 'In A' = 'Inhibition A',
+                             'In B' = 'Inhibition B', 'Adp' = 'Adaptation')
+g_stacked_MX <- ggplot(bgraph_MX, aes(x = st, y = as.numeric(value), group=emotions)) +
+  geom_col(position = position_fill(), aes(fill= emotions)) +
+  geom_text(aes(label = scales::percent(perc, accuracy = 0.1)), position=position_fill(0.9), size=3, col='white') +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_fill_grey(start = .1, end = .8) + 
+  guides(fill=guide_legend(title="Emotions")) +
+  theme_bw()+
+  labs(x = "Stages", y = "Percentage") +
+  ggtitle("(b) Mexico Earthquake") +
+  theme(plot.title = element_text(hjust = 0.5))
+#g_stacked_MX
+
+
+#Bar Graph
+g_bar_MX <- ggplot(graph_st_MX, aes(x = st, y = as.numeric(perc), group = emotions)) + 
+  geom_col(position = position_dodge(), aes(fill= emotions)) +
+  geom_text(aes(label = scales::percent(perc, accuracy = 0.1)), position=position_dodge(0.9), size=2, vjust=1) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_grey(start = .5, end = .95) +
+  theme_bw()+
+  labs(x = NULL, y = "Percentage") +
+  ggtitle("(b) Mexico Earthquake") +
+  theme(plot.title = element_text(hjust = 0.5)) #+ 
+#g_bar_MX
+```
+
+#### 6.3) Turkey case
+
+Creation of bar graph for emotions by stages in Turkey case.
+
+``` {r}
+#Change point selected
+cp_TK <- c(167, 622, 701)
+
+fear_TK <- timeframes(emotions_TK$fear,cp_TK)
+anger_TK <- timeframes(emotions_TK$anger,cp_TK)
+disgust_TK <- timeframes(emotions_TK$disgust,cp_TK)
+sadness_TK <- timeframes(emotions_TK$sadness,cp_TK)
+interest_TK <- timeframes(emotions_TK$interest,cp_TK)
+
+emotions <- c('fear', 'anger', 'disgust', 'sadness', 'interest')
+
+#Data transformation for the plot
+st <- rep('Emergency',5)
+value <- c(sum(fear_TK[[1]]),sum(anger_TK[[1]]),sum(disgust_TK[[1]]),
+           sum(sadness_TK[[1]]), sum(interest_TK[[1]]))
+st1_TK <- as.data.frame(cbind(st, value, emotions))
+
+st <- rep('Inhibition A',5)
+value <- c(sum(fear_TK[[2]]),sum(anger_TK[[2]]),sum(disgust_TK[[2]]),
+           sum(sadness_TK[[2]]), sum(interest_TK[[2]]))
+st2A_TK <- as.data.frame(cbind(st, value, emotions))
+
+st <- rep('Inhibition B',5)
+value <- c(sum(fear_TK[[3]]),sum(anger_TK[[3]]),sum(disgust_TK[[3]]),
+           sum(sadness_TK[[3]]), sum(interest_TK[[3]]))
+st2B_TK <- as.data.frame(cbind(st, value, emotions))
+
+st <- rep('Adaptation',5)
+value <- c(sum(fear_TK[[4]]),sum(anger_TK[[4]]),sum(disgust_TK[[4]]),
+           sum(sadness_TK[[4]]), sum(interest_TK[[4]]))
+st3_TK <- as.data.frame(cbind(st, value, emotions))
+
+
+graph_st_TK <- rbind(st1_TK, st2A_TK, st2B_TK, st3_TK)
+graph_st_TK$value <- as.numeric(graph_st_TK$value)
+ 
+#adding column with percentages
+graph_st_TK <- graph_st_TK %>%
+                group_by(st) %>% mutate(perc = value/sum(value))
+
+#Definition of the order to plot stages and emotions
+graph_st_TK$st <- factor(graph_st_TK$st, levels=c('Emergency', 'Inhibition A', 'Inhibition B', 'Adaptation'))
+graph_st_TK$emotions <- factor(graph_st_TK$emotions, levels=c('fear', 'anger', 'disgust', 'sadness', 'interest'))
+
+#Stacked Graph
+bgraph_TK <- graph_st_TK #Duplicate data for the graph
+levels(bgraph_TK$st) <- list('Eme' = 'Emergency', 'In A' = 'Inhibition A',
+                             'In B' = 'Inhibition B', 'Adp' = 'Adaptation')
+g_stacked_TK <- ggplot(bgraph_TK, aes(x = st, y = as.numeric(value), group=emotions)) +
+  geom_col(position = position_fill(), aes(fill= emotions)) +
+  geom_text(aes(label = scales::percent(perc, accuracy = 0.1)), position=position_fill(0.9), size=3, col='white') +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_fill_grey(start = .1, end = .8) + 
+  guides(fill=guide_legend(title="Emotions")) +
+  theme_bw()+
+  labs(x = "Stages", y = "Percentage") +
+  ggtitle("(c) Turkey Earthquake") +
+  theme(plot.title = element_text(hjust = 0.5))
+#g_stacked_TK
+
+
+#Bar Graph
+g_bar_TK <- ggplot(graph_st_TK, aes(x = st, y = as.numeric(perc), group = emotions)) + 
+  geom_col(position = position_dodge(), aes(fill= emotions)) +
+  geom_text(aes(label = scales::percent(perc, accuracy = 0.1)), position=position_dodge(0.9), size=2, vjust=1) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_grey(start = .5, end = .95) +
+  theme_bw()+
+  labs(x = NULL, y = "Percentage") +
+  ggtitle("(c) Turkey Earthquake") +
+  theme(plot.title = element_text(hjust = 0.5)) #+ 
+#g_bar_TK
+```
+
+#### 6.4) Figures descriptive analysis
+
+##### 6.4.1) Figure S.F. 4: Bar plot emotion by stage
+
+Supplemental Figure 4. It shows the proportion of emotions by stages for
+the three cases.
+
+``` {r}
+ggarrange(g_bar_LA, g_bar_MX, g_bar_TK, ncol = 1, nrow = 3, common.legend = TRUE, legend="right")
+```
+
+
+##### 6.4.2) Figure 3 manuscript
+
+Figure 3 included in the manuscript. It shows the proportion of emotions
+by stages in a stacked bar plot.
+
+``` {r}
+ggarrange(g_stacked_LA, g_stacked_MX, g_stacked_TK, ncol = 3, nrow = 1, common.legend = TRUE, legend="bottom")
+
+```
+
+### 6.5) Anova analysis
+
+#### 6.5.1) LA case
+
+Pairwise comparison of emotions between stages using Anova and Tukey HSD test for LA case.
+
+``` {r}
+#Adding a variable with the stages defined from previous analysis
+emotions_LA['new_stages'] <- c(rep('Emergency', length(stages_LA[[1]])), 
+                               rep('Inhibition A', length(stages_LA[[2]])),
+                               rep('Inhibition B', length(stages_LA[[3]])), 
+                               rep('Adaptation', length(stages_LA[[4]])),
+                               rep('Adaptation', length(stages_LA[[5]])))
+
+emotions_LA['avg_emotions'] <- emotions_LA$emo_sum/5 
+
+#Emotions across all the stages. We used Tukey correction for the pairwise comparison
+TukeyHSD(aov(sadness ~ new_stages, data=emotions_LA))
+
+TukeyHSD(aov(anger ~ new_stages, data=emotions_LA))
+
+TukeyHSD(aov(fear ~ new_stages, data=emotions_LA))
+
+TukeyHSD(aov(disgust ~ new_stages, data=emotions_LA))
+
+TukeyHSD(aov(interest ~ new_stages, data=emotions_LA))
+
+#Average emotions
+TukeyHSD(aov(avg_emotions ~ new_stages, data=emotions_LA))
+
+```
+
+#### 6.5.2) LA case
+
+Pairwise comparison of emotions within stages using Anova and Tukey HSD test for LA case.
+
+```{r}
+#Emotions within stages
+emotions_LA_st1 <- data.frame(cbind(fear_LA[[1]],anger_LA[[1]],disgust_LA[[1]],sadness_LA[[1]],
+                                    interest_LA[[1]], seq(1,length(fear_LA[[1]]))))
+colnames(emotions_LA_st1) <- c('fear','ang','dis','sad','int', 'time')
+
+emotions_LA_st2A <- data.frame(cbind(fear_LA[[2]],anger_LA[[2]],disgust_LA[[2]],sadness_LA[[2]],
+                                     interest_LA[[2]], seq(1,length(fear_LA[[2]]))))
+colnames(emotions_LA_st2A) <- c('fear','ang','dis','sad','int', 'time')
+
+emotions_LA_st2B <- data.frame(cbind(fear_LA[[3]],anger_LA[[3]],disgust_LA[[3]],sadness_LA[[3]],
+                                     interest_LA[[3]], seq(1,length(fear_LA[[3]]))))
+colnames(emotions_LA_st2B) <- c('fear','ang','dis','sad','int', 'time')
+
+emotions_LA_st3 <- data.frame(cbind(fear_LA[[4]],anger_LA[[4]],disgust_LA[[4]],sadness_LA[[4]],
+                                    interest_LA[[4]], seq(1,length(fear_LA[[4]]))))
+colnames(emotions_LA_st3) <- c('fear','ang','dis','sad','int', 'time')
+
+#Transform the dataframes divided by column to an extended version
+melt_LA_st1 <- melt(emotions_LA_st1,id="time")
+colnames(melt_LA_st1) <- c('time', 'emotions', 'value')
+
+melt_LA_st2A <- melt(emotions_LA_st2A,id="time")
+colnames(melt_LA_st2A) <- c('time', 'emotions', 'value')
+
+melt_LA_st2B <- melt(emotions_LA_st2B,id="time")
+colnames(melt_LA_st2B) <- c('time', 'emotions', 'value')
+
+melt_LA_st3 <- melt(emotions_LA_st3,id="time")
+colnames(melt_LA_st3) <- c('time', 'emotions', 'value')
+
+#ANOVA results
+summary((aov(value ~ emotions, data = melt_LA_st1)))
+summary((aov(value ~ emotions, data = melt_LA_st2A)))
+summary((aov(value ~ emotions, data = melt_LA_st2B)))
+summary((aov(value ~ emotions, data = melt_LA_st3)))
+
+```
+
+#### 6.5.3) Figure S.F. 5: TukeyHSD LA
+
+Supplemental Figure 5. Representation of pairwise comparison using Anova
+and Tukey HSD test for LA case.
+
+``` {r}
+####################################
+## Function to plot TukeyHSD test ##
+####################################
+
+# The code to plot the TukeyHSD test was obtained and adapted from
+# https://rpubs.com/Edbbio/885399
+
+GGTukey<-function(Tukey){
+  A<-require("tidyverse")
+  if(A==TRUE){
+    library(tidyverse)
+  } else {
+    install.packages("tidyverse")
+    library(tidyverse)
+  }
+  B<-as.data.frame(Tukey[1])
+  colnames(B)[2:3]<-c("min",
+                      "max")
+  C<-data.frame(id=row.names(B),
+                min=B$min,
+                max=B$max)
+  D<-C%>%
+    ggplot(aes(id))+
+    geom_errorbar(aes(ymin=min,
+                      ymax=max),
+                  width = 0.2)+
+    geom_hline(yintercept=0,
+               color="red", linetype=2, size=0.75)+
+    labs(x=NULL)+
+    coord_flip()+
+    theme(#text=element_text(family="TimesNewRoman"),
+          title=element_text(color="black",size=15),
+          axis.text = element_text(color="black",size=9),
+          axis.title = element_text(color="black",size=9),
+          panel.grid=element_line(color="grey75"),
+          axis.line=element_blank(),
+          plot.background=element_rect(fill="white",color="white"),
+          panel.background=element_rect(fill="white"),
+          panel.border = element_rect(colour = "black", fill = NA,size=0.59),
+          legend.key= element_rect(color="white",fill="white")
+    )
+  return(D)
+}
+##########################
+
+#Plot of TukeyHSD for each one of the stages
+Tukey_LA_st1 <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_LA_st1))) +
+  ylab("Emergency")
+
+Tukey_LA_st2A <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_LA_st2A))) +
+  ylab('Inhibition A')
+
+Tukey_LA_st2B <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_LA_st2B))) +
+  ylab("Inhibition B")
+
+Tukey_LA_st3 <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_LA_st3))) +
+  ylab("Adaptation")
+
+#Title for the plot arrange
+tgrob <- text_grob("(a) LA Earthquake",size = 12, face = "bold")
+plot_t <- as_ggplot(tgrob) + theme(plot.margin = margin(0,0,0,.1, "cm"),
+                                   plot.background=element_rect(fill="white",color="white"))
+
+Tukeyplot_LA <- ggarrange(plot_t, NULL, NULL, NULL,
+                          Tukey_LA_st1, Tukey_LA_st2A, Tukey_LA_st2B, Tukey_LA_st3,
+                          ncol = 4, nrow = 2, heights = c(1,9))
+
+#TukeyHSD plot results
+Tukeyplot_LA
+```
+
+#### 6.5.4) Mexico case
+
+Pairwise comparison of emotions between stages using Anova and Tukey HSD test for Mexico case.
+
+``` {r}
+#Adding a variable with the stages defined in this work
+emotions_MX['new_stages'] <- c(rep('Emergency', length(stages_MX[[1]])),
+                               rep('Inhibition A', length(stages_MX[[2]])),
+                               rep('Inhibition B', length(stages_MX[[3]])), 
+                               rep('Adaptation', length(stages_MX[[4]])),
+                               rep('Adaptation', length(stages_MX[[5]])), 
+                               rep('Adaptation', length(stages_MX[[6]])))
+
+emotions_MX['avg_emotions'] <- emotions_MX$emo_sum/5 
+
+#Emotions across all the stages. I use Tukey correction for the pairwise comparison
+TukeyHSD(aov(sadness ~ new_stages, data=emotions_MX))
+
+TukeyHSD(aov(anger ~ new_stages, data=emotions_MX))
+
+TukeyHSD(aov(fear ~ new_stages, data=emotions_MX))
+
+TukeyHSD(aov(disgust ~ new_stages, data=emotions_MX))
+
+TukeyHSD(aov(interest ~ new_stages, data=emotions_MX))
+
+#Average emotions
+TukeyHSD(aov(avg_emotions ~ new_stages, data=emotions_MX))
+```
+
+#### 6.5.5) Mexico case
+
+Pairwise comparison of emotions within stages using Anova and Tukey HSD test for Mexico case.
+
+```{r}
+#Emotions within stages
+emotions_MX_st1 <- data.frame(cbind(fear_MX[[1]],anger_MX[[1]],disgust_MX[[1]],sadness_MX[[1]],
+                                    interest_MX[[1]], seq(1,length(fear_MX[[1]]))))
+colnames(emotions_MX_st1) <- c('fear','ang','dis','sad','int', 'time')
+
+emotions_MX_st2A <- data.frame(cbind(fear_MX[[2]],anger_MX[[2]],disgust_MX[[2]],sadness_MX[[2]],
+                                     interest_MX[[2]], seq(1,length(fear_MX[[2]]))))
+colnames(emotions_MX_st2A) <- c('fear','ang','dis','sad','int', 'time')
+
+emotions_MX_st2B <- data.frame(cbind(fear_MX[[3]],anger_MX[[3]],disgust_MX[[3]],sadness_MX[[3]],
+                                     interest_MX[[3]], seq(1,length(fear_MX[[3]]))))
+colnames(emotions_MX_st2B) <- c('fear','ang','dis','sad','int', 'time')
+
+emotions_MX_st3 <- data.frame(cbind(fear_MX[[4]],anger_MX[[4]],disgust_MX[[4]],sadness_MX[[4]],
+                                    interest_MX[[4]], seq(1,length(fear_MX[[4]]))))
+colnames(emotions_MX_st3) <- c('fear','ang','dis','sad','int', 'time')
+
+#Transform the dataframes divided by column to an extended version
+melt_MX_st1 <- melt(emotions_MX_st1,id="time")
+colnames(melt_MX_st1) <- c('time', 'emotions', 'value')
+
+melt_MX_st2A <- melt(emotions_MX_st2A,id="time")
+colnames(melt_MX_st2A) <- c('time', 'emotions', 'value')
+
+melt_MX_st2B <- melt(emotions_MX_st2B,id="time")
+colnames(melt_MX_st2B) <- c('time', 'emotions', 'value')
+
+melt_MX_st3 <- melt(emotions_MX_st3,id="time")
+colnames(melt_MX_st3) <- c('time', 'emotions', 'value')
+
+#ANOVA results
+summary((aov(value ~ emotions, data = melt_MX_st1)))
+summary((aov(value ~ emotions, data = melt_MX_st2A)))
+summary((aov(value ~ emotions, data = melt_MX_st2B)))
+summary((aov(value ~ emotions, data = melt_MX_st3)))
+```
+
+#### 6.5.6) Figure S.F. 6: TukeyHSD Mexico
+
+Supplemental Figure 6. Representation of pairwise comparison using Anova
+and Tukey HSD test for Mexico case.
+
+``` {r}
+#Plot of TukeyHSD for each one of the stages
+Tukey_MX_st1 <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_MX_st1))) +
+  ylab("Emergency")
+
+Tukey_MX_st2A <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_MX_st2A))) +
+  ylab('Inhibition A')
+
+Tukey_MX_st2B <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_MX_st2B))) +
+  ylab("Inhibition B")
+
+Tukey_MX_st3 <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_MX_st3))) +
+  ylab("Adaptation")
+
+#Title for the plot arrange
+tgrob <- text_grob("(b) Mexico Earthquake",size = 12, face = "bold")
+plot_t <- as_ggplot(tgrob) + theme(plot.margin = margin(0,0,0,.1, "cm"),
+                                   plot.background=element_rect(fill="white",color="white"))
+
+Tukeyplot_MX <- ggarrange(plot_t, NULL, NULL, NULL,
+                          Tukey_MX_st1, Tukey_MX_st2A, Tukey_MX_st2B, Tukey_MX_st3,
+                          ncol = 4, nrow = 2, heights = c(1,9))
+Tukeyplot_MX
+```
+
+#### 6.5.7) Turkey case
+
+Pairwise comparison of emotions between stages using Anova and Tukey HSD test for Turkey case.
+
+``` {r}
+#Adding a variable with the stages defined in this work
+emotions_TK['new_stages'] <- c(rep('Emergency', length(stages_TK[[1]])), 
+                               rep('Emergency', length(stages_TK[[2]])),
+                               rep('Inhibition A', length(stages_TK[[3]])), 
+                               rep('Inhibition B', length(stages_TK[[4]])),
+                               rep('Adaptation', length(stages_TK[[5]])), 
+                               rep('Adaptation', length(stages_TK[[6]])))
+
+emotions_TK['avg_emotions'] <- emotions_TK$emo_sum/5 
+
+#Emotions across all the stages. I use Tukey correction for the pairwise comparison
+TukeyHSD(aov(sadness ~ new_stages, data=emotions_TK))
+
+TukeyHSD(aov(anger ~ new_stages, data=emotions_TK))
+
+TukeyHSD(aov(fear ~ new_stages, data=emotions_TK))
+
+TukeyHSD(aov(disgust ~ new_stages, data=emotions_TK))
+
+TukeyHSD(aov(interest ~ new_stages, data=emotions_TK))
+
+#Average emotions
+TukeyHSD(aov(avg_emotions ~ new_stages, data=emotions_MX))
+```
+
+#### 6.5.8) Turkey case
+
+Pairwise comparison of emotions within stages using Anova and Tukey HSD test for Turkey case.
+
+```{r}
+#Emotions within stages
+emotions_TK_st1 <- data.frame(cbind(fear_TK[[1]],anger_TK[[1]],disgust_TK[[1]],sadness_TK[[1]],
+                                    interest_TK[[1]], seq(1,length(fear_TK[[1]]))))
+colnames(emotions_TK_st1) <- c('fear','ang','dis','sad','int', 'time')
+
+emotions_TK_st2A <- data.frame(cbind(fear_TK[[2]],anger_TK[[2]],disgust_TK[[2]],sadness_TK[[2]],
+                                     interest_TK[[2]], seq(1,length(fear_TK[[2]]))))
+colnames(emotions_TK_st2A) <- c('fear','ang','dis','sad','int', 'time')
+
+emotions_TK_st2B <- data.frame(cbind(fear_TK[[3]],anger_TK[[3]],disgust_TK[[3]],sadness_TK[[3]],
+                                     interest_TK[[3]], seq(1,length(fear_TK[[3]]))))
+colnames(emotions_TK_st2B) <- c('fear','ang','dis','sad','int', 'time')
+
+emotions_TK_st3 <- data.frame(cbind(fear_TK[[4]],anger_TK[[4]],disgust_TK[[4]],sadness_TK[[4]],
+                                    interest_TK[[4]], seq(1,length(fear_TK[[4]]))))
+colnames(emotions_TK_st3) <- c('fear','ang','dis','sad','int', 'time')
+
+#Transform the dataframes divided by column to an extended version
+melt_TK_st1 <- melt(emotions_TK_st1,id="time")
+colnames(melt_TK_st1) <- c('time', 'emotions', 'value')
+
+melt_TK_st2A <- melt(emotions_TK_st2A,id="time")
+colnames(melt_TK_st2A) <- c('time', 'emotions', 'value')
+
+melt_TK_st2B <- melt(emotions_TK_st2B,id="time")
+colnames(melt_TK_st2B) <- c('time', 'emotions', 'value')
+
+melt_TK_st3 <- melt(emotions_TK_st3,id="time")
+colnames(melt_TK_st3) <- c('time', 'emotions', 'value')
+
+#ANOVA results
+summary((aov(value ~ emotions, data = melt_TK_st1)))
+summary((aov(value ~ emotions, data = melt_TK_st2A)))
+summary((aov(value ~ emotions, data = melt_TK_st2B)))
+summary((aov(value ~ emotions, data = melt_TK_st3)))
+```
+
+#### 6.5.9) Figure S.F. 7: ANOVA and TukeyHSD Turkey
+
+Supplemental Figure 7. Representation of pairwise comparison using Anova
+and Tukey HSD test for Turkey case.
+
+``` {r}
+#Plot of TukeyHSD for each one of the stages
+Tukey_TK_st1 <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_TK_st1))) +
+  ylab("Emergency")
+
+Tukey_TK_st2A <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_TK_st2A))) +
+  ylab('Inhibition A')
+
+Tukey_TK_st2B <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_TK_st2B))) +
+  ylab("Inhibition B")
+
+Tukey_TK_st3 <- GGTukey(TukeyHSD(aov(value ~ emotions, data = melt_TK_st3))) +
+  ylab("Adaptation")
+
+#Title for the plot arrange
+tgrob <- text_grob("(c) Turkey Earthquake",size = 12, face = "bold")
+plot_t <- as_ggplot(tgrob) + theme(plot.margin = margin(0,0,0,.1, "cm"),
+                                   plot.background=element_rect(fill="white",color="white"))
+
+Tukeyplot_TK <- ggarrange(plot_t, NULL, NULL, NULL,
+                          Tukey_TK_st1, Tukey_TK_st2A, Tukey_TK_st2B, Tukey_TK_st3,
+                          ncol = 4, nrow = 2, heights = c(1,9))
+Tukeyplot_TK
+```
+
+#### 6.5.8) Figure 4 manuscript
+
+Figure 4 included in the manuscript. We present the results of the TukeyHSD pairwise 
+comparisons between emotion within stages for each case.
+
+```{r}
+
+ggarrange(Tukeyplot_LA, Tukeyplot_MX, Tukeyplot_TK,
+          ncol=1, nrow=3)
+
+```
+
+### 7) Clustering
+
+#### 7.1) Figure S.F. 8: Cluster LA case
+
+Supplemental Figure 8. Clustering of emotions by stage for LA case.
+
+``` {r}
+library(TSclust)
+#library(seriation) #for plotting
+library(ggplot2)
+
+########################################
+## Function for min-max normalization ##
+########################################
+
+min_max_norm <- function(x) {
+    (x - min(x)) / (max(x) - min(x))
+  }
+
+#Compute dissimilarity based on ACF
+diss_LA_st1 <- diss(as.data.frame(lapply(emotions_LA_st1[,1:5], min_max_norm)), "ACF")
+diss_LA_st2A <- diss(as.data.frame(lapply(emotions_LA_st2A[,1:5], min_max_norm)), "ACF")
+diss_LA_st2B<- diss(as.data.frame(lapply(emotions_LA_st2B[,1:5], min_max_norm)), "ACF")
+diss_LA_st3 <- diss(as.data.frame(lapply(emotions_LA_st3[,1:5], min_max_norm)), "ACF")
+
+#Clustering
+clus_LA_st1 <- factoextra::hcut(diss_LA_st1, isdiss = inherits(diss_LA_st1, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+clus_LA_st2A <- factoextra::hcut(diss_LA_st2A, isdiss = inherits(diss_LA_st2A, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+clus_LA_st2B <- factoextra::hcut(diss_LA_st2B, isdiss = inherits(diss_LA_st2B, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+clus_LA_st3 <- factoextra::hcut(diss_LA_st3, isdiss = inherits(diss_LA_st3, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+
+#Clustering plots
+clus_LA_st1 <- factoextra::fviz_dend(clus_LA_st1, main = NULL, k_colors = c("black", "grey"), xlab = "Emergency")
+clus_LA_st2A <- factoextra::fviz_dend(clus_LA_st2A, main = NULL, k_colors = c("black", "grey"), xlab = "Inhibition A")
+clus_LA_st2B <- factoextra::fviz_dend(clus_LA_st2B, main = NULL, k_colors = c("black", "grey"), xlab = "Inhibition B")
+clus_LA_st3 <- factoextra::fviz_dend(clus_LA_st3, main = NULL, k_colors = c("black", "grey"), xlab = "Adaptation")
+
+#Title for the plot arrange
+tgrob <- text_grob("(a) LA Earthquake",size = 12, face = "bold")
+plot_t <- as_ggplot(tgrob) + theme(plot.margin = margin(0,0,0,.1, "cm"),
+                                   plot.background=element_rect(fill="white",color="white"))
+
+clusterplot_LA <- ggarrange(plot_t, NULL, NULL, NULL,
+                            clus_LA_st1, clus_LA_st2A, clus_LA_st2B, clus_LA_st3,
+                            ncol = 4, nrow = 2, heights = c(1,9))
+
+#Cluster plot results
+clusterplot_LA
+```
+
+#### 7.2) Figure S.F. 9: Cluster Mexico case
+
+Supplemental Figure 9. Clustering of emotions by stage for Mexico case.
+
+``` {r}
+#Compute dissimilarity based on ACF
+diss_MX_st1 <- diss(as.data.frame(lapply(emotions_MX_st1[,1:5], min_max_norm)), "ACF")
+diss_MX_st2A <- diss(as.data.frame(lapply(emotions_MX_st2A[,1:5], min_max_norm)), "ACF")
+diss_MX_st2B <- diss(as.data.frame(lapply(emotions_MX_st2B[,1:5], min_max_norm)), "ACF")
+diss_MX_st3 <- diss(as.data.frame(lapply(emotions_MX_st3[,1:5], min_max_norm)), "ACF")
+
+#Clustering
+clus_MX_st1 <- factoextra::hcut(diss_MX_st1, isdiss = inherits(diss_MX_st1, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+clus_MX_st2A <- factoextra::hcut(diss_MX_st2A, isdiss = inherits(diss_MX_st2A, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+clus_MX_st2B <- factoextra::hcut(diss_MX_st2B, isdiss = inherits(diss_MX_st2B, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+clus_MX_st3 <- factoextra::hcut(diss_MX_st3, isdiss = inherits(diss_MX_st3, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+
+#Clustering plots
+clus_MX_st1 <- factoextra::fviz_dend(clus_MX_st1, main = NULL, k_colors = c("black", "grey"), xlab = "Emergency")
+clus_MX_st2A <- factoextra::fviz_dend(clus_MX_st2A, main = NULL, k_colors = c("black", "grey"), xlab = "Inhibition A")
+clus_MX_st2B <- factoextra::fviz_dend(clus_MX_st2B, main = NULL, k_colors = c("black", "grey"), xlab = "Inhibition B")
+clus_MX_st3 <- factoextra::fviz_dend(clus_MX_st3, main = NULL, k_colors = c("black", "grey"), xlab = "Adaptation")
+
+#Title for the plot arrange
+tgrob <- text_grob("(b) Mexico Earthquake",size = 12, face = "bold")
+plot_t <- as_ggplot(tgrob) + theme(plot.margin = margin(0,0,0,.1, "cm"),
+                                   plot.background=element_rect(fill="white",color="white"))
+
+clusterplot_MX <- ggarrange(plot_t, NULL, NULL, NULL,
+                            clus_MX_st1, clus_MX_st2A, clus_MX_st2B, clus_MX_st3,
+                            ncol = 4, nrow = 2, heights = c(1,9))
+
+#Cluster plot results
+clusterplot_MX
+```
+
+#### 7.3) Figure S.F. 10: Cluster Turkey case
+
+Supplemental Figure 10. Clustering of emotions by stage for Turkey case.
+
+``` {r}
+#Compute dissimilarity based on ACF
+diss_TK_st1 <- diss(as.data.frame(lapply(emotions_TK_st1[,1:5], min_max_norm)), "ACF")
+diss_TK_st2A <- diss(as.data.frame(lapply(emotions_TK_st2A[,1:5], min_max_norm)), "ACF")
+diss_TK_st2B<- diss(as.data.frame(lapply(emotions_TK_st2B[,1:5], min_max_norm)), "ACF")
+diss_TK_st3 <- diss(as.data.frame(lapply(emotions_TK_st3[,1:5], min_max_norm)), "ACF")
+
+#Clustering
+clus_TK_st1 <- factoextra::hcut(diss_TK_st1, isdiss = inherits(diss_TK_st1, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+clus_TK_st2A <- factoextra::hcut(diss_TK_st2A, isdiss = inherits(diss_TK_st2A, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+clus_TK_st2B <- factoextra::hcut(diss_TK_st2B, isdiss = inherits(diss_TK_st2B, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+clus_TK_st3 <- factoextra::hcut(diss_TK_st3, isdiss = inherits(diss_TK_st3, "dist"), 
+                                 hc_func = 'hclust', hc_method = 'complete', k=2)
+
+#Clustering plots
+clus_TK_st1 <- factoextra::fviz_dend(clus_TK_st1, main = NULL, k_colors = c("black", "grey"), xlab = "Emergency")
+clus_TK_st2A <- factoextra::fviz_dend(clus_TK_st2A, main = NULL, k_colors = c("black", "grey"), xlab = "Inhibition A")
+clus_TK_st2B <- factoextra::fviz_dend(clus_TK_st2B, main = NULL, k_colors = c("black", "grey"), xlab = "Inhibition B")
+clus_TK_st3 <- factoextra::fviz_dend(clus_TK_st3, main = NULL, k_colors = c("black", "grey"), xlab = "Adaptation", palette = 'grey')
+
+#Title for the plot arrange
+tgrob <- text_grob("(c) Turkey Earthquake",size = 12, face = "bold")
+plot_t <- as_ggplot(tgrob) + theme(plot.margin = margin(0,0,0,.1, "cm"),
+                                   plot.background=element_rect(fill="white",color="white"))
+
+clusterplot_TK <- ggarrange(plot_t, NULL, NULL, NULL,
+                            clus_TK_st1, clus_TK_st2A, clus_TK_st2B, clus_TK_st3,
+                            ncol = 4, nrow = 2, heights = c(1,9))
+
+#Cluster plot results
+clusterplot_TK
+```
+
+#### 7.4) Figure 4 manuscript
+
+Figure 5 included in the manuscript. Clustering result for emotions by
+stage. We use the ACF (autocorrelation function) for clustering because
+it represents the similarity between a time series and a lagged version
+of itself, therefore, it accounts for the time structure of the data.
+
+``` {r}
+
+ggarrange(clusterplot_LA, clusterplot_MX, clusterplot_TK,
+          ncol=1, nrow=3)
+```
+
+
+### 8) Granger Causality
+
+#### 8.1) Toda-Yamamoto Granger causality correction
+
+The work developed for Toda and Yamamoto (1995) allows to adjust the
+Granger-causality test in cases in which the time series under analysis
+are non-stationary. Using the Toda-Yamamoto procedure it is possible to
+analyze time series even if they are cointegrated to determine their
+Granger-causality. To perform Toda-Yamamoto we (1) test the stationarity
+of the time series, (2) determine the maximum order of integration for
+each one of the time series, (3) analyze the lag for the VAR model based
+on information criteria, (4) compute the VAR model, (5) review the
+stability and correlation of residuals of the VAR model, (6) perform the
+test Granger causality using the Toda-Yamamoto procedure.
+
+``` {r}
+##########################
+# Toda-Yamamoto Function #
+##########################
+
+# The code of the Toda-Yamamoto function was obtained from
+# https://github.com/jlukito/ira_3media/blob/master/final_analysis.md
+# We make a modification to the code so we can add the maximum order of integration as parameter
+# This work is cited in the main text as (Lukito, 2020)
+
+toda.yamamoto <- function(var, max.oi) {
+  # It requires the VAR function plus the maximum order of integration with the time series at level
+  ty.df <- eval(var$call$y);
+  ty.varnames <- colnames(ty.df);
+  ty.lags <- var$p + max.oi;
+  ty.augmented_var <- VAR(ty.df, ty.lags, type=var$type);
+  
+  ty.results <- data.frame(predictor = character(0), causes = character(0), chisq = numeric(0), p = numeric(0));
+  
+  for (current_variable in ty.varnames) {
+    # Construct the restriction matrix: to test if *current_variable* causes any of the others,
+    # Test if the lagged values of current variable (ignoring the lags added with max.oi) are jointly insignificant
+    
+    ty.restrictions <- as.matrix(Bcoef(ty.augmented_var))*0+1;
+    ty.coefres <- head(grep(current_variable, colnames(ty.restrictions), value=T), -1);
+    ty.restrictions[which(rownames(ty.restrictions) != current_variable), ty.coefres] <- 0;
+    # Estimate restricted var
+    ty.restricted_var <- restrict(ty.augmented_var, 'manual', resmat=ty.restrictions);
+    
+    for (k in 1:length(ty.varnames)) {
+      if (ty.varnames[k] != current_variable) {
+        my.wald <- waldtest(ty.augmented_var$varresult[[k]], ty.restricted_var$varresult[[k]], test='Chisq');
+        ty.results <- rbind(ty.results, data.frame(
+          predictor = current_variable, 
+          causes = ty.varnames[k], 
+          chisq = as.numeric(my.wald$Chisq[2]), 
+          p = my.wald$`Pr(>Chisq)`[2])
+        );
+      }
+    }
+  }
+  return(ty.results);
+}
+```
+
+#### 8.2) LA case
+
+##### 8.2.1) Emergency Stage
+
+Granger causality test for emergency stage in LA case.
+
+``` {r}
+library('tseries')
+library('vars')
+library('forecast')
+
+# Plot
+ts.plot(emotions_LA_st1[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Emergency')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_LA_st1) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_LA_st1$fear)
+
+adf.test(emotions_LA_st1$anger)
+
+adf.test(emotions_LA_st1$disgust)
+
+adf.test(emotions_LA_st1$sadness)
+
+adf.test(emotions_LA_st1$interest)
+
+kpss.test(emotions_LA_st1$fear)
+
+kpss.test(emotions_LA_st1$anger)
+
+kpss.test(emotions_LA_st1$disgust)
+
+kpss.test(emotions_LA_st1$sadness)
+
+kpss.test(emotions_LA_st1$interest)
+
+# (2) order of integration
+auto.arima(emotions_LA_st1$fear)
+
+auto.arima(emotions_LA_st1$anger)
+
+auto.arima(emotions_LA_st1$disgust)
+
+auto.arima(emotions_LA_st1$sadness)
+
+auto.arima(emotions_LA_st1$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_LA_st1[,1:5], lag=10)
+var_lag
+
+# (4) VAR
+var_LA_1 <- VAR(emotions_LA_st1[,1:5], p=3)
+
+# (5) VAR stability and residual correlation
+roots(var_LA_1)
+
+serial.test(var_LA_1)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_LA_1, max.oi=2)
+```
+
+##### 8.2.2) Inhibition-A Stage
+
+Granger causality test for inhibition-A stage in LA case.
+
+``` {r}
+# Plot
+ts.plot(emotions_LA_st2A[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Inhibition A')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_LA_st2A) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_LA_st2A$fear)
+
+adf.test(emotions_LA_st2A$anger)
+
+adf.test(emotions_LA_st2A$disgust)
+
+adf.test(emotions_LA_st2A$sadness)
+
+adf.test(emotions_LA_st2A$interest)
+
+kpss.test(emotions_LA_st2A$fear)
+
+kpss.test(emotions_LA_st2A$anger)
+
+kpss.test(emotions_LA_st2A$disgust)
+
+kpss.test(emotions_LA_st2A$sadness)
+
+kpss.test(emotions_LA_st2A$interest)
+
+# (2) order of integration
+auto.arima(emotions_LA_st2A$fear)
+
+auto.arima(emotions_LA_st2A$anger)
+
+auto.arima(emotions_LA_st2A$disgust)
+
+auto.arima(emotions_LA_st2A$sadness)
+
+auto.arima(emotions_LA_st2A$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_LA_st2A[,1:5], lag=10)
+var_lag
+
+# (4) VAR
+var_LA_2A <- VAR(emotions_LA_st2A[,1:5], p=1)
+
+# (5)  VAR stability and residual correlation
+roots(var_LA_2A)
+
+serial.test(var_LA_2A)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_LA_2A, max.oi=1)
+```
+
+##### 8.2.3) Inhibition-B Stage
+
+Granger causality test for inhibition-B stage in LA case.
+
+``` {r}
+# Plot
+ts.plot(emotions_LA_st2B[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Inhibition B')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_LA_st2B) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_LA_st2B$fear)
+
+adf.test(emotions_LA_st2B$anger)
+
+adf.test(emotions_LA_st2B$disgust)
+
+adf.test(emotions_LA_st2B$sadness)
+
+adf.test(emotions_LA_st2B$interest)
+
+kpss.test(emotions_LA_st2B$fear)
+
+kpss.test(emotions_LA_st2B$anger)
+
+kpss.test(emotions_LA_st2B$disgust)
+
+kpss.test(emotions_LA_st2B$sadness)
+
+kpss.test(emotions_LA_st2B$interest)
+
+# (2) order of integration
+auto.arima(emotions_LA_st2B$fear)
+
+auto.arima(emotions_LA_st2B$anger)
+
+auto.arima(emotions_LA_st2B$disgust)
+
+auto.arima(emotions_LA_st2B$sadness)
+
+auto.arima(emotions_LA_st2B$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_LA_st2B[,1:5], lag=9)
+var_lag
+
+# (4) VAR
+var_LA_2B <- VAR(emotions_LA_st2B[,1:5], p=1)
+
+# (5) VAR stability and residual correlation
+roots(var_LA_2B)
+
+serial.test(var_LA_2B)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_LA_2B, max.oi=1)
+```
+
+##### 8.2.4) Adaptation Stage
+
+Granger causality test for adaptation stage in LA case.
+
+``` {r}
+# Plot
+ts.plot(emotions_LA_st3[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Adaptation')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_LA_st3) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_LA_st3$fear)
+
+adf.test(emotions_LA_st3$anger)
+
+adf.test(emotions_LA_st3$disgust)
+
+adf.test(emotions_LA_st3$sadness)
+
+adf.test(emotions_LA_st3$interest)
+
+kpss.test(emotions_LA_st3$fear)
+
+kpss.test(emotions_LA_st3$anger)
+
+kpss.test(emotions_LA_st3$disgust)
+
+kpss.test(emotions_LA_st3$sadness)
+
+kpss.test(emotions_LA_st3$interest)
+
+# (2) order of integration
+auto.arima(emotions_LA_st3$fear)
+
+auto.arima(emotions_LA_st3$anger)
+
+auto.arima(emotions_LA_st3$disgust)
+
+auto.arima(emotions_LA_st3$sadness)
+
+auto.arima(emotions_LA_st3$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_LA_st3[,1:5], lag=10)
+var_lag
+
+# (4) VAR
+var_LA_3 <- VAR(emotions_LA_st3[,1:5], p=2)
+
+# (5) VAR stability and residual correlation
+roots(var_LA_3)
+
+serial.test(var_LA_3)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_LA_3, max.oi=1)
+```
+
+#### 8.3) Mexico case
+
+##### 8.3.1) Emergency Stage
+
+Granger causality test for emergency stage in Mexico case.
+
+``` {r}
+# Plot
+ts.plot(emotions_MX_st1[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Emergency')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_MX_st1) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_MX_st1$fear)
+
+adf.test(emotions_MX_st1$anger)
+
+adf.test(emotions_MX_st1$disgust)
+
+adf.test(emotions_MX_st1$sadness)
+
+adf.test(emotions_MX_st1$interest)
+
+kpss.test(emotions_MX_st1$fear)
+
+kpss.test(emotions_MX_st1$anger)
+
+kpss.test(emotions_MX_st1$disgust)
+
+kpss.test(emotions_MX_st1$sadness)
+
+kpss.test(emotions_MX_st1$interest)
+
+# (2) order of integration
+auto.arima(emotions_MX_st1$fear)
+
+auto.arima(emotions_MX_st1$anger)
+
+auto.arima(emotions_MX_st1$disgust)
+
+auto.arima(emotions_MX_st1$sadness)
+
+auto.arima(emotions_MX_st1$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_MX_st1[,1:5], lag=10)
+var_lag
+
+# (4) VAR
+var_MX_1 <- VAR(emotions_MX_st1[,1:5], p=2)
+
+# (5) VAR stability and residual correlation
+roots(var_MX_1)
+
+serial.test(var_MX_1)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_MX_1, max.oi=1)
+```
+
+##### 8.3.2) Inhibition-A Stage
+
+Granger causality test for inhibition-A stage in Mexico case.
+
+``` {r}
+# Plot
+ts.plot(emotions_MX_st2A[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Inhibition A')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_MX_st2A) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_MX_st2A$fear)
+
+adf.test(emotions_MX_st2A$anger)
+
+adf.test(emotions_MX_st2A$disgust)
+
+adf.test(emotions_MX_st2A$sadness)
+
+adf.test(emotions_MX_st2A$interest)
+
+kpss.test(emotions_MX_st2A$fear)
+
+kpss.test(emotions_MX_st2A$anger)
+
+kpss.test(emotions_MX_st2A$disgust)
+
+kpss.test(emotions_MX_st2A$sadness)
+
+kpss.test(emotions_MX_st2A$interest)
+
+# (2) order of integration
+auto.arima(emotions_MX_st2A$fear)
+
+auto.arima(emotions_MX_st2A$anger)
+
+auto.arima(emotions_MX_st2A$disgust)
+
+auto.arima(emotions_MX_st2A$sadness)
+
+auto.arima(emotions_MX_st2A$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_MX_st2A[,1:5], lag=10)
+var_lag
+
+# (4) VAR
+var_MX_2A <- VAR(emotions_MX_st2A[,1:5], p=1)
+
+# (5) VAR stability and residual correlation
+roots(var_MX_2A)
+
+serial.test(var_MX_2A)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_MX_2A, max.oi=1)
+```
+
+##### 8.3.3) Inhibition-B Stage
+
+Granger causality test for inhibition-B stage in Mexico case.
+
+``` {r}
+# Plot
+ts.plot(emotions_MX_st2B[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Inhibition B')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_MX_st2B) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_MX_st2B$fear)
+
+adf.test(emotions_MX_st2B$anger)
+
+adf.test(emotions_MX_st2B$disgust)
+
+adf.test(emotions_MX_st2B$sadness)
+
+adf.test(emotions_MX_st2B$interest)
+
+kpss.test(emotions_MX_st2B$fear)
+
+kpss.test(emotions_MX_st2B$anger)
+
+kpss.test(emotions_MX_st2B$disgust)
+
+kpss.test(emotions_MX_st2B$sadness)
+
+kpss.test(emotions_MX_st2B$interest)
+
+# (2) order of integration
+auto.arima(emotions_MX_st2B$fear)
+
+auto.arima(emotions_MX_st2B$anger)
+
+auto.arima(emotions_MX_st2B$disgust)
+
+auto.arima(emotions_MX_st2B$sadness)
+
+auto.arima(emotions_MX_st2B$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_MX_st2B[,1:5], lag=10)
+var_lag
+
+# (4) VAR
+var_MX_2B <- VAR(emotions_MX_st2B[,1:5], p=1)
+
+# (5) VAR stability and residual correlation
+roots(var_MX_2B)
+
+serial.test(var_MX_2B)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_MX_2B, max.oi=1)
+```
+
+##### 8.3.4) Adaptation Stage
+
+Granger causality test for adaptation stage in Mexico case.
+
+``` {r}
+# Plot
+ts.plot(emotions_MX_st3[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Adaptation')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_MX_st3) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_MX_st3$fear)
+
+adf.test(emotions_MX_st3$anger)
+
+adf.test(emotions_MX_st3$disgust)
+
+adf.test(emotions_MX_st3$sadness)
+
+adf.test(emotions_MX_st3$interest)
+
+kpss.test(emotions_MX_st3$fear)
+
+kpss.test(emotions_MX_st3$anger)
+
+kpss.test(emotions_MX_st3$disgust)
+
+kpss.test(emotions_MX_st3$sadness)
+
+kpss.test(emotions_MX_st3$interest)
+
+# (2) order of integration
+auto.arima(emotions_MX_st3$fear)
+
+auto.arima(emotions_MX_st3$anger)
+
+auto.arima(emotions_MX_st3$disgust)
+
+auto.arima(emotions_MX_st3$sadness)
+
+auto.arima(emotions_MX_st3$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_MX_st3[,1:5], lag=10)
+var_lag
+
+# (4) VAR
+var_MX_3 <- VAR(emotions_MX_st3[,1:5], p=5)
+
+# (5) VAR stability and residual correlation
+roots(var_MX_3)
+
+serial.test(var_MX_3)
+
+# (6) Toda-Yamamoto
+toda.yamamoto(var_MX_3, max.oi=1)
+```
+
+
+#### 8.4) Turkey case
+
+##### 8.4.1) Emergency Stage
+
+Granger causality test for emergency stage in Turkey case.
+
+``` {r}
+# Plot
+ts.plot(emotions_TK_st1[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Emergency')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_TK_st1) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_TK_st1$fear)
+
+adf.test(emotions_TK_st1$anger)
+
+adf.test(emotions_TK_st1$disgust)
+
+adf.test(emotions_TK_st1$sadness)
+
+adf.test(emotions_TK_st1$interest)
+
+kpss.test(emotions_TK_st1$fear)
+
+kpss.test(emotions_TK_st1$anger)
+
+kpss.test(emotions_TK_st1$disgust)
+
+kpss.test(emotions_TK_st1$sadness)
+
+kpss.test(emotions_TK_st1$interest)
+
+# (2) order of integration
+auto.arima(emotions_TK_st1$fear)
+
+auto.arima(emotions_TK_st1$anger)
+
+auto.arima(emotions_TK_st1$disgust)
+
+auto.arima(emotions_TK_st1$sadness)
+
+auto.arima(emotions_TK_st1$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_TK_st1[,1:5], lag=10)
+var_lag
+
+# (4) VAR
+var_TK_1 <- VAR(emotions_TK_st1[,1:5], p=1)
+
+# (5) VAR stability and residual correlation
+roots(var_TK_1)
+
+serial.test(var_TK_1)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_TK_1, max.oi=1)
+```
+
+##### 8.4.2) Inhibition-A Stage
+
+Granger causality test for inhibition-A stage in Turkey case.
+
+``` {r}
+# Plot
+ts.plot(emotions_TK_st2A[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Inhibition A')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_TK_st2A) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_TK_st2A$fear)
+
+adf.test(emotions_TK_st2A$anger)
+
+adf.test(emotions_TK_st2A$disgust)
+
+adf.test(emotions_TK_st2A$sadness)
+
+adf.test(emotions_TK_st2A$interest)
+
+kpss.test(emotions_TK_st2A$fear)
+
+kpss.test(emotions_TK_st2A$anger)
+
+kpss.test(emotions_TK_st2A$disgust)
+
+kpss.test(emotions_TK_st2A$sadness)
+
+kpss.test(emotions_TK_st2A$interest)
+
+# (2) order of integration
+auto.arima(emotions_TK_st2A$fear)
+
+auto.arima(emotions_TK_st2A$anger)
+
+auto.arima(emotions_TK_st2A$disgust)
+
+auto.arima(emotions_TK_st2A$sadness)
+
+auto.arima(emotions_TK_st2A$interest)
+
+# (3) lag selection
+var_lag <- tsDyn::lags.select(emotions_TK_st2A[,1:5], lag=10)
+var_lag
+
+# (4) VAR
+var_TK_2A <- VAR(emotions_TK_st2A[,1:5], p=4)
+
+# (5) VAR stability and residual correlation
+roots(var_TK_2A)
+
+serial.test(var_TK_2A)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_TK_2A, max.oi=1)
+```
+
+##### 8.4.3) Inhibition-B Stage
+
+Granger causality test for inhibition-B stage in Turkey case.
+
+``` {r}
+# Plot
+ts.plot(emotions_TK_st2B[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Inhibition B')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_TK_st2B) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_TK_st2B$fear)
+
+adf.test(emotions_TK_st2B$anger)
+
+adf.test(emotions_TK_st2B$disgust)
+
+adf.test(emotions_TK_st2B$sadness)
+
+adf.test(emotions_TK_st2B$interest)
+
+kpss.test(emotions_TK_st2B$fear)
+
+kpss.test(emotions_TK_st2B$anger)
+
+kpss.test(emotions_TK_st2B$disgust)
+
+kpss.test(emotions_TK_st2B$sadness)
+
+kpss.test(emotions_TK_st2B$interest)
+
+# (2) order of integration
+auto.arima(emotions_TK_st2B$fear)
+
+auto.arima(emotions_TK_st2B$anger)
+
+auto.arima(emotions_TK_st2B$disgust)
+
+auto.arima(emotions_TK_st2B$sadness)
+
+auto.arima(emotions_TK_st2B$interest)
+
+# (3) lag selection
+var_TKg <- tsDyn::lags.select(emotions_TK_st2B[,1:5], lag=10)
+var_TKg
+
+# (4) VAR
+var_TK_2B <- VAR(emotions_TK_st2B[,1:5], p=1)
+
+# (5) VAR stability and residual correlation
+roots(var_TK_2B)
+
+serial.test(var_TK_2B)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_TK_2B, max.oi=1)
+```
+
+##### 8.4.4) Adaptation Stage
+
+Granger causality test for adaptation stage in Turkey case.
+
+``` {r}
+# Plot
+ts.plot(emotions_TK_st3[,1:5], col=c('red', 'blue', 'skyblue', 'orange', 'black'), main='Time series Adaptation')
+legend("topright",c("fear","anger","disgust","sadness","interest"),col=c('red', 'blue', 'skyblue', 'orange', 'black'),lwd=c(2),bty="n")
+
+colnames(emotions_TK_st3) <- c('fear', 'anger', 'disgust', 'sadness', 'interest', 'time')
+
+# (1) Stationarity tests
+adf.test(emotions_TK_st3$fear)
+
+adf.test(emotions_TK_st3$anger)
+
+adf.test(emotions_TK_st3$disgust)
+
+adf.test(emotions_TK_st3$sadness)
+
+adf.test(emotions_TK_st3$interest)
+
+kpss.test(emotions_TK_st3$fear)
+
+kpss.test(emotions_TK_st3$anger)
+
+kpss.test(emotions_TK_st3$disgust)
+
+kpss.test(emotions_TK_st3$sadness)
+
+kpss.test(emotions_TK_st3$interest)
+
+# (2) order of integration
+auto.arima(emotions_TK_st3$fear)
+
+auto.arima(emotions_TK_st3$anger)
+
+auto.arima(emotions_TK_st3$disgust)
+
+auto.arima(emotions_TK_st3$sadness)
+
+auto.arima(emotions_TK_st3$interest)
+
+# (3) lag selection
+var_TKg <- tsDyn::lags.select(emotions_TK_st3[,1:5], lag=10)
+var_TKg
+
+# (4) VAR
+var_TK_3 <- VAR(emotions_TK_st3[,1:5], p=7)
+
+# (5) VAR stability and residual correlation
+roots(var_TK_3)
+
+serial.test(var_TK_3)
+
+# (6) Toda-Yamamoto
+
+toda.yamamoto(var_TK_3, max.oi=1)
+```
